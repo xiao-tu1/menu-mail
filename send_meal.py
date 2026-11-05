@@ -15,6 +15,7 @@ import datetime as dt
 import json
 import logging
 import os
+import re
 import smtplib
 import sys
 from email.header import Header
@@ -120,13 +121,63 @@ def parse_date(value, today):
     return None
 
 
+def read_canteen_grid(rows, target_date, meal):
+    """识别食堂周食谱版式：第 2 行是「星期X / 2026年11月2日」，A 列餐次、B 列种类。"""
+    day_cols = {}
+    header_idx = None
+    for i, row in enumerate(rows[:8]):
+        for j, cell in enumerate(row):
+            s = str(cell or "")
+            m = re.search(r"(\d{4})年(\d{1,2})月(\d{1,2})日", s)
+            if m and ("星期" in s or "周" in s):
+                day_cols[j] = dt.date(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+                header_idx = i
+    if not day_cols:
+        return None
+
+    if target_date not in day_cols.values():
+        return target_date, meal, []
+    col = next(j for j, d in day_cols.items() if d == target_date)
+
+    meal_cn = MEAL_NAMES[meal]
+    cur_meal, cur_cat = "", ""
+    sections = []
+    for row in rows[(header_idx or 0) + 1:]:
+        a = str(row[0]).strip() if row and row[0] else ""
+        b = str(row[1]).strip().replace("\n", "/") if len(row) > 1 and row[1] else ""
+        if a:
+            cur_meal = a
+        if b:
+            cur_cat = b
+        if meal_cn not in cur_meal:
+            continue
+        val = row[col] if len(row) > col else None
+        if not val:
+            continue
+        items = [x.strip() for x in re.split(r"[、,，\n;；]", str(val)) if x.strip()]
+        if not items:
+            continue
+        if sections and sections[-1][0] == cur_cat:
+            sections[-1][1].extend(items)
+        else:
+            sections.append([cur_cat, items])
+    return target_date, meal, sections
+
+
 def read_menu(menu_path, target_date, meal):
-    """读取 Excel，返回 (日期, 餐次, 菜品列表)。支持长表和宽表。"""
+    """读取菜单，返回 (日期, 餐次, [(分类, 菜品列表)])。
+
+    支持：食堂周食谱、长表（日期/餐次/菜品）、宽表（日期/早餐/午餐/晚餐）。
+    """
     wb = openpyxl.load_workbook(menu_path, data_only=True)
     ws = wb.active
     rows = list(ws.iter_rows(values_only=True))
     if not rows:
         raise SystemExit("菜单文件是空的。")
+
+    grid = read_canteen_grid(rows, target_date, meal)
+    if grid is not None:
+        return grid
 
     header = [str(c).strip() if c is not None else "" for c in rows[0]]
     # 长表：日期 | 餐次 | 菜品
@@ -141,7 +192,7 @@ def read_menu(menu_path, target_date, meal):
             m = MEAL_ALIASES.get(str(row[i_meal]).strip())
             if d == target_date and m == meal:
                 text = str(row[i_dish] or "").strip()
-                return d, m, split_dishes(text)
+                return d, m, [(None, split_dishes(text))]
         return target_date, meal, []
 
     # 宽表：日期 | 早餐 | 午餐 | 晚餐
@@ -159,7 +210,7 @@ def read_menu(menu_path, target_date, meal):
         d = parse_date(row[i_date], target_date)
         if d == target_date:
             text = str(row[meal_col] or "").strip()
-            return d, meal, split_dishes(text)
+            return d, meal, [(None, split_dishes(text))]
     return target_date, meal, []
 
 
@@ -184,19 +235,35 @@ def wrap_text(draw, text, font, max_width):
     return lines
 
 
-def render_menu_image(date, meal, dishes, canteen, out_path):
-    W, H = 900, 1200
+def render_menu_image(date, meal, sections, canteen, out_path):
+    W = 900
+    f_title = get_font(56, bold=True)
+    f_date = get_font(32)
+    f_meal = get_font(44, bold=True)
+    f_cat = get_font(30, bold=True)
+    f_dish = get_font(32)
+    f_foot = get_font(22)
+
+    # 先量一遍高度，菜品多时自动加长
+    tmp = Image.new("RGB", (10, 10))
+    td = ImageDraw.Draw(tmp)
+    ops = []
+    content_h = 0
+    for cat, items in sections:
+        if cat:
+            ops.append(("cat", cat))
+            content_h += 56
+        for item in items:
+            lines = wrap_text(td, item, f_dish, W - 260)
+            ops.append(("item", lines))
+            content_h += 48 * len(lines) + 12
+
+    header_h = 390 + (70 if canteen else 0)
+    H = max(1200, int(header_h + content_h + 140))
+
     img = Image.new("RGB", (W, H), "#FBF7EE")
     draw = ImageDraw.Draw(img)
-
-    # 顶部色带
     draw.rectangle([0, 0, W, 16], fill="#B8860B")
-
-    f_title = get_font(60, bold=True)
-    f_date = get_font(34)
-    f_meal = get_font(46, bold=True)
-    f_dish = get_font(34)
-    f_foot = get_font(24)
 
     title = "今日菜单"
     tw = draw.textlength(title, font=f_title)
@@ -204,31 +271,37 @@ def render_menu_image(date, meal, dishes, canteen, out_path):
 
     date_text = f"{date.year} 年 {date.month} 月 {date.day} 日"
     dw = draw.textlength(date_text, font=f_date)
-    draw.text(((W - dw) / 2, 160), date_text, font=f_date, fill="#6B5B33")
+    draw.text(((W - dw) / 2, 150), date_text, font=f_date, fill="#6B5B33")
 
     meal_text = MEAL_NAMES[meal]
     mw = draw.textlength(meal_text, font=f_meal)
-    draw.rounded_rectangle([(W - mw) / 2 - 40, 230, (W + mw) / 2 + 40, 320], radius=20, fill="#B8860B")
-    draw.text(((W - mw) / 2, 245), meal_text, font=f_meal, fill="white")
+    draw.rounded_rectangle([(W - mw) / 2 - 40, 215, (W + mw) / 2 + 40, 300], radius=20, fill="#B8860B")
+    draw.text(((W - mw) / 2, 228), meal_text, font=f_meal, fill="white")
 
-    y = 390
+    y = 350
     if canteen:
-        draw.text((90, y), canteen, font=f_dish, fill="#6B5B33")
+        draw.text((90, y), canteen, font=f_date, fill="#6B5B33")
         y += 70
+    y += 20
 
-    if not dishes:
+    if not ops:
         draw.text((90, y), "今日暂无菜单", font=f_dish, fill="#A33B28")
     else:
-        for item in dishes:
-            draw.ellipse([90, y + 16, 104, y + 30], fill="#B8860B")
-            for line in wrap_text(draw, item, f_dish, W - 220):
-                draw.text((130, y), line, font=f_dish, fill="#2B2B2B")
-                y += 54
-            y += 14
+        for kind, value in ops:
+            if kind == "cat":
+                draw.rectangle([90, y + 6, 98, y + 38], fill="#B8860B")
+                draw.text((114, y), value, font=f_cat, fill="#8A6D1F")
+                y += 56
+            else:
+                draw.ellipse([110, y + 14, 122, y + 26], fill="#B8860B")
+                for line in value:
+                    draw.text((150, y), line, font=f_dish, fill="#2B2B2B")
+                    y += 48
+                y += 12
 
     foot = "祝用餐愉快"
     fw = draw.textlength(foot, font=f_foot)
-    draw.text(((W - fw) / 2, H - 80), foot, font=f_foot, fill="#9A8A60")
+    draw.text(((W - fw) / 2, H - 70), foot, font=f_foot, fill="#9A8A60")
 
     img.save(out_path, "PNG")
     return out_path
@@ -276,15 +349,20 @@ def main():
         target = dt.datetime.strptime(args.date, "%Y-%m-%d").date()
 
     menu_path = os.path.join(BASE_DIR, cfg.get("menu_file", "menu.xlsx"))
-    date, meal, dishes = read_menu(menu_path, target, args.meal)
+    date, meal, sections = read_menu(menu_path, target, args.meal)
 
     os.makedirs(OUT_DIR, exist_ok=True)
     out_path = os.path.join(OUT_DIR, f"{date}_{args.meal}.png")
-    render_menu_image(date, meal, dishes, cfg.get("canteen", ""), out_path)
-    logging.info("生成图片 %s，菜品 %s", out_path, dishes)
+    render_menu_image(date, meal, sections, cfg.get("canteen", ""), out_path)
+    logging.info("生成图片 %s，菜单 %s", out_path, sections)
 
+    body_lines = []
+    for cat, items in sections:
+        if items:
+            prefix = f"【{cat}】" if cat else "· "
+            body_lines.append(prefix + "、".join(items))
     subject = f"{date.month}月{date.day}日 {MEAL_NAMES[args.meal]}菜单"
-    body = f"{date} {MEAL_NAMES[args.meal]}菜单见附件。\n\n" + ("\n".join("· " + d for d in dishes) if dishes else "暂无菜单")
+    body = f"{date} {MEAL_NAMES[args.meal]}菜单见附件。\n\n" + ("\n".join(body_lines) if body_lines else "暂无菜单")
 
     if args.no_send:
         print("已生成（未发送）：", out_path)
