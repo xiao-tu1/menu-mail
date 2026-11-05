@@ -11,6 +11,7 @@
 配置文件：config.json（参考 config.example.json）
 """
 import argparse
+import csv
 import datetime as dt
 import json
 import logging
@@ -164,11 +165,36 @@ def read_canteen_grid(rows, target_date, meal):
     return target_date, meal, sections
 
 
+def read_csv_menu(path, target_date, meal):
+    """读取 menu.csv：日期,餐次,分类,菜品。"""
+    sections = []
+    with open(path, "r", encoding="utf-8-sig", newline="") as f:
+        for row in csv.DictReader(f):
+            d = parse_date(row.get("日期", ""), target_date)
+            if d != target_date:
+                continue
+            m = MEAL_ALIASES.get(str(row.get("餐次", "")).strip())
+            if m != meal:
+                continue
+            cat = str(row.get("分类", "")).strip().replace("\n", "/")
+            items = split_dishes(str(row.get("菜品", "")))
+            if not items:
+                continue
+            if sections and sections[-1][0] == cat:
+                sections[-1][1].extend(items)
+            else:
+                sections.append([cat, items])
+    return target_date, meal, sections
+
+
 def read_menu(menu_path, target_date, meal):
     """读取菜单，返回 (日期, 餐次, [(分类, 菜品列表)])。
 
-    支持：食堂周食谱、长表（日期/餐次/菜品）、宽表（日期/早餐/午餐/晚餐）。
+    支持：menu.csv、食堂周食谱、长表（日期/餐次/菜品）、宽表（日期/早餐/午餐/晚餐）。
     """
+    if str(menu_path).lower().endswith(".csv"):
+        return read_csv_menu(menu_path, target_date, meal)
+
     wb = openpyxl.load_workbook(menu_path, data_only=True)
     ws = wb.active
     rows = list(ws.iter_rows(values_only=True))
@@ -348,7 +374,13 @@ def main():
     else:
         target = dt.datetime.strptime(args.date, "%Y-%m-%d").date()
 
-    menu_path = os.path.join(BASE_DIR, cfg.get("menu_file", "menu.xlsx"))
+    menu_path = os.path.join(BASE_DIR, cfg.get("menu_file", "menu.csv"))
+    if not os.path.exists(menu_path):
+        for alt in ("menu.csv", "menu.xlsx"):
+            p = os.path.join(BASE_DIR, alt)
+            if os.path.exists(p):
+                menu_path = p
+                break
     date, meal, sections = read_menu(menu_path, target, args.meal)
 
     os.makedirs(OUT_DIR, exist_ok=True)
