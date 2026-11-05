@@ -2,126 +2,89 @@
 
 按周录入菜单，程序在固定时间取出对应餐次、生成图片，发到 QQ 邮箱。
 
-两种跑法：
-
-- **GitHub Actions（推荐）**：不依赖你的电脑开机，免费；
-- **本地 Windows 任务**：电脑开着才准点，适合调试。
+- **运行在 GitHub Actions**：不依赖电脑开机；
+- 菜单用 **`menu.csv` 纯文本**，每周在手机 GitHub App 里改几行就行。
 
 ## 目录
 
 ```
 menu-bot/
-├─ send_meal.py                主程序
-├─ menu.xlsx                   周菜单（当前是示例）
-├─ menu_template.xlsx          模板
-├─ config.example.json         本地配置模板
-├─ requirements.txt            Pillow / openpyxl
-├─ .github/workflows/send-menu.yml   GitHub Actions 定时任务
+├─ send_meal.py                 主程序
+├─ menu.csv                    周菜单（推荐，纯文本可编辑）
+├─ menu.xlsx                   食堂周食谱 Excel（备用，程序也支持）
+├─ config.example.json         本地调试配置模板
+├─ requirements.txt
+├─ .github/workflows/send-menu.yml
 ├─ install_tasks.ps1           本地 Windows 定时任务（可选）
-├─ output/                     生成的图片
-└─ logs/send.log               日志
+├─ output/                     生成图片
+└─ logs/send.log
 ```
 
-## 一、菜单格式
+## 一、每周菜单怎么改（手机就能改）
 
-`menu.xlsx` 支持两种：
+打开仓库里的 `menu.csv`，点右上角铅笔编辑，按四列填写：
 
-**长表（推荐）**
-
-| 日期 | 餐次 | 菜品 |
-|---|---|---|
-| 2026-11-05 | 早餐 | 小米粥、鸡蛋、鲜肉包 |
-| 2026-11-05 | 午餐 | 红烧肉、青菜、米饭 |
-
-**宽表**
-
-| 日期 | 早餐 | 午餐 | 晚餐 |
-|---|---|---|---|
-| 2026-11-05 | 小米粥、鸡蛋 | 红烧肉、青菜 | 土豆牛肉、米饭 |
-
-菜品用顿号、逗号、分号、换行分隔均可；日期支持 `2026-11-05`、`11月5日`、`11/5`、`周一`。
-
-## 二、GitHub Actions 部署（推荐）
-
-### 1. 建仓库
-
-在 GitHub 新建一个**私有仓库**（Private），名字随意，例如 `menu-mail`。
-
-### 2. 上传文件
-
-把本目录里的这些文件传到仓库根目录：
-
-```
-send_meal.py
-menu.xlsx
-menu_template.xlsx
-requirements.txt
-config.example.json
-.github/workflows/send-menu.yml
+```csv
+日期,餐次,分类,菜品
+2026-11-09,早餐,小菜,凉拌黄瓜、炝拌豆芽
+2026-11-09,早餐,主食/小吃,馒头、花卷、鸡蛋
+2026-11-09,早餐,饮品粥,小米粥、牛奶
+2026-11-09,午餐,特色/菜品,红烧肉、清炒时蔬
+2026-11-09,午餐,主食/小吃,米饭、馒头
+2026-11-09,晚餐,菜品,土豆牛肉、蒜蓉西兰花
 ```
 
-不要上传 `config.json`（里面有授权码，`.gitignore` 已排除）。
+规则：
 
-### 3. 配置 Secrets
+- **日期**：`2026-11-09` 这种格式；
+- **餐次**：只能写 `早餐` / `午餐` / `晚餐`；
+- **分类**：随意写，会作为小标题显示（小菜、主食/小吃、饮品粥……）；
+- **菜品**：同一行用顿号 `、` 分隔，程序会拆成一条条。
 
-仓库 → **Settings → Secrets and variables → Actions → New repository secret**，添加三个：
+改完点 **Commit changes** 即可，下一次定时自动用新菜单。
 
-| Name | Value |
+> 也可以继续上传食堂的 Excel 周食谱，程序会自动识别「餐次 / 种类 / 星期」版式；但 CSV 在手机上更好改。
+
+## 二、定时
+
+| 北京时间 | 内容 |
 |---|---|
-| `QQ_USER` | 你的 QQ 邮箱，如 `123456@qq.com` |
-| `QQ_AUTH_CODE` | QQ 邮箱 SMTP 授权码（不是 QQ 密码） |
-| `QQ_TO` | 收件邮箱，可多个，用英文逗号分隔 |
+| 21:15 | 次日早餐 |
+| 11:00 | 当天午餐 |
+| 16:00 | 当天晚餐 |
 
-授权码获取：QQ 邮箱 → 设置 → 账户 → 开启「POP3/IMAP/SMTP 服务」→ 生成授权码。
+GitHub 的 cron 用 UTC（已换算好），可能有几分钟延迟。
 
-### 4. 先手动跑一次
+## 三、配置（已配好，仅记录）
 
-仓库 → **Actions** → 左侧「每日菜单邮件」→ **Run workflow**：
+仓库 → Settings → Secrets and variables → Actions：
 
-- meal 选 `lunch`
-- send_date 选 `today`
+| Name | 说明 |
+|---|---|
+| `QQ_USER` | 发件 QQ 邮箱 |
+| `QQ_AUTH_CODE` | QQ 邮箱 SMTP 授权码 |
+| `QQ_TO` | 收件邮箱，多个用英文逗号分隔 |
 
-跑完看日志和邮箱，确认能收到。
+## 四、手动测试
 
-### 5. 定时规则
+Actions →「每日菜单邮件」→ Run workflow：
 
-工作流里已经写好（UTC 时间，北京时间 = UTC+8）：
+- `meal` 选餐次；
+- `send_date` 选 today / tomorrow；
+- `dry_run` 选 `true` 只生成不发送，选 `false` 真发。
 
-| UTC cron | 北京时间 | 内容 |
-|---|---|---|
-| `15 13 * * *` | 21:15 | 次日早餐 |
-| `0 3 * * *` | 11:00 | 当天午餐 |
-| `0 8 * * *` | 16:00 | 当天晚餐 |
-
-### 6. 两个注意点
-
-- GitHub 的定时任务**可能延迟几分钟**（高峰期常见 5–15 分钟），不能做到秒级准点；
-- 仓库连续 **60 天没有任何提交**，GitHub 会自动暂停定时任务。每周更新菜单时提交一次即可保持。
-
-## 三、本地运行（调试用）
+## 五、本地调试（可选）
 
 1. 复制 `config.example.json` 为 `config.json`，填邮箱和授权码；
-2. 测试：
+2. 运行：
 
 ```bash
 python send_meal.py --meal lunch --no-send   # 只出图
-python send_meal.py --meal lunch             # 真发邮件
+python send_meal.py --meal supper            # 真发
 ```
 
-3. 注册 Windows 定时任务（可选）：
+## 六、注意
 
-```powershell
-powershell -ExecutionPolicy Bypass -File install_tasks.ps1
-```
-
-电脑关机/睡眠时不会触发；要准点请用 GitHub Actions。
-
-## 四、常见问题
-
-**Actions 里报邮箱信息不完整**：三个 Secrets 没配全，或名字拼错。
-
-**收不到邮件**：先看 Actions 日志；QQ 邮箱必须用授权码，且 `QQ_TO` 要写完整邮箱地址。
-
-**图片里没有菜**：检查 `menu.xlsx` 的日期是否是今天（早餐是明天），餐次是否写对。
-
-**想换发送渠道**：改 `send_email()` 即可；微信自动化稳定性不如邮箱，建议保留邮箱为主通道。
+- GitHub 定时可能延迟几分钟；仓库连续 60 天无提交会暂停定时，改一次菜单即可恢复；
+- 菜单日期覆盖不到当天时，会显示「今日暂无菜单」；
+- 图片高度会根据菜品数量自动加长。
