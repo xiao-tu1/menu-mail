@@ -1,0 +1,15 @@
+{
+  "menu_file": "menu.xlsx",
+  "canteen": "学员食堂",
+  "sender_name": "菜单助手",
+  "email": {
+    "smtp_host": "smtp.qq.com",
+    "smtp_port": 465,
+    "use_ssl": true,
+    "user": "你的QQ号@qq.com",
+    "auth_code": "在这里填QQ邮箱SMTP授权码",
+    "to": [
+      "你的QQ号@qq.com"
+    ]
+  }
+}
