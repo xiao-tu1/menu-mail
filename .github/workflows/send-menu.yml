@@ -3,7 +3,7 @@ name: 每日菜单邮件
 on:
   schedule:
     # 以下均为 UTC；北京时间 = UTC+8
-    - cron: '15 1 * * *'   # 09:15 北京 → 次日早餐
+    - cron: '15 13 * * *'  # 21:15 北京 → 次日早餐
     - cron: '0 3 * * *'    # 11:00 北京 → 当天午餐
     - cron: '0 8 * * *'    # 16:00 北京 → 当天晚餐
   workflow_dispatch:
@@ -54,7 +54,7 @@ jobs:
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             MEAL="${{ github.event.inputs.meal }}"
             DATE="${{ github.event.inputs.send_date }}"
-          elif [ "${{ github.event.schedule }}" = "15 1 * * *" ]; then
+          elif [ "${{ github.event.schedule }}" = "15 13 * * *" ]; then
             MEAL="breakfast"
             DATE="tomorrow"
           elif [ "${{ github.event.schedule }}" = "0 3 * * *" ]; then
