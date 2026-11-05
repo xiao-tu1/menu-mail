@@ -1,11 +1,7 @@
 name: 每日菜单邮件
 
 on:
-  schedule:
-    # 以下均为 UTC；北京时间 = UTC+8
-    - cron: '15 13 * * *'  # 21:15 北京 → 次日早餐
-    - cron: '0 3 * * *'    # 11:00 北京 → 当天午餐
-    - cron: '0 8 * * *'    # 16:00 北京 → 当天晚餐
+  # 定时已交给腾讯云函数触发（workflow_dispatch），这里不再用 GitHub 的 cron
   workflow_dispatch:
     inputs:
       meal:
