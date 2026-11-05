@@ -1,0 +1,68 @@
+name: 每日菜单邮件
+
+on:
+  schedule:
+    # 以下均为 UTC；北京时间 = UTC+8
+    - cron: '15 1 * * *'   # 09:15 北京 → 次日早餐
+    - cron: '0 3 * * *'    # 11:00 北京 → 当天午餐
+    - cron: '0 8 * * *'    # 16:00 北京 → 当天晚餐
+  workflow_dispatch:
+    inputs:
+      meal:
+        description: '要发送的餐次'
+        required: true
+        default: lunch
+        type: choice
+        options:
+          - breakfast
+          - lunch
+          - supper
+      send_date:
+        description: '日期：today / tomorrow'
+        required: true
+        default: today
+        type: choice
+        options:
+          - today
+          - tomorrow
+
+permissions:
+  contents: read
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@v4
+
+      - name: 安装 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 安装依赖
+        run: pip install -r requirements.txt
+
+      - name: 生成并发送
+        env:
+          QQ_USER: ${{ secrets.QQ_USER }}
+          QQ_AUTH_CODE: ${{ secrets.QQ_AUTH_CODE }}
+          QQ_TO: ${{ secrets.QQ_TO }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            MEAL="${{ github.event.inputs.meal }}"
+            DATE="${{ github.event.inputs.send_date }}"
+          elif [ "${{ github.event.schedule }}" = "15 1 * * *" ]; then
+            MEAL="breakfast"
+            DATE="tomorrow"
+          elif [ "${{ github.event.schedule }}" = "0 3 * * *" ]; then
+            MEAL="lunch"
+            DATE="today"
+          else
+            MEAL="supper"
+            DATE="today"
+          fi
+          echo "meal=$MEAL date=$DATE"
+          python send_meal.py --meal "$MEAL" --date "$DATE"
