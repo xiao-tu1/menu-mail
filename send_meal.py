@@ -237,7 +237,7 @@ def render_menu_image(date, meal, dishes, canteen, out_path):
 def send_email(cfg, subject, body, image_path):
     em = cfg["email"]
     msg = MIMEMultipart()
-    msg["From"] = f"{cfg.get('sender_name', '菜单助手')} <{em['user']}>"
+    msg["From"] = em["user"]
     msg["To"] = ", ".join(em["to"])
     msg["Subject"] = Header(subject, "utf-8")
 
