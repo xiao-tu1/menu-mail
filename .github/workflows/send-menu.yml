@@ -25,6 +25,14 @@ on:
         options:
           - today
           - tomorrow
+      dry_run:
+        description: '只生成不发送（测试用）'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
 
 permissions:
   contents: read
@@ -65,4 +73,6 @@ jobs:
             DATE="today"
           fi
           echo "meal=$MEAL date=$DATE"
-          python send_meal.py --meal "$MEAL" --date "$DATE"
+          EXTRA=""
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then EXTRA="--no-send"; fi
+          python send_meal.py --meal "$MEAL" --date "$DATE" $EXTRA
