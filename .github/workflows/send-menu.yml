@@ -1,7 +1,7 @@
-name: 每日菜单邮件
+name: 每日菜单推送
 
 on:
-  # 定时已交给腾讯云函数触发（workflow_dispatch），这里不再用 GitHub 的 cron
+  # 定时由腾讯云函数触发（workflow_dispatch），这里不用 GitHub 的 cron
   workflow_dispatch:
     inputs:
       meal:
@@ -31,7 +31,7 @@ on:
           - 'true'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   send:
@@ -49,26 +49,40 @@ jobs:
       - name: 安装依赖
         run: pip install -r requirements.txt
 
-      - name: 生成并发送
-        env:
-          QQ_USER: ${{ secrets.QQ_USER }}
-          QQ_AUTH_CODE: ${{ secrets.QQ_AUTH_CODE }}
-          QQ_TO: ${{ secrets.QQ_TO }}
+      - name: 解析参数
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             MEAL="${{ github.event.inputs.meal }}"
             DATE="${{ github.event.inputs.send_date }}"
-          elif [ "${{ github.event.schedule }}" = "15 13 * * *" ]; then
-            MEAL="breakfast"
-            DATE="tomorrow"
-          elif [ "${{ github.event.schedule }}" = "0 3 * * *" ]; then
+          else
             MEAL="lunch"
             DATE="today"
-          else
-            MEAL="supper"
-            DATE="today"
           fi
-          echo "meal=$MEAL date=$DATE"
-          EXTRA=""
-          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then EXTRA="--no-send"; fi
-          python send_meal.py --meal "$MEAL" --date "$DATE" $EXTRA
+          echo "MEAL=$MEAL" >> "$GITHUB_ENV"
+          echo "DATE=$DATE" >> "$GITHUB_ENV"
+
+      - name: 生成菜单图片
+        run: python send_meal.py --meal "$MEAL" --date "$DATE" --no-send
+
+      - name: 提交图片到仓库
+        run: |
+          git config user.name "menu-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add output
+          if git diff --cached --quiet; then
+            echo "图片没有变化"
+          else
+            git commit -m "菜单图片 $MEAL $DATE"
+            git push
+          fi
+
+      - name: 推送到微信
+        env:
+          PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            echo "dry_run，跳过推送"
+          else
+            python send_pushplus.py --meal "$MEAL" --date "$DATE"
+          fi
