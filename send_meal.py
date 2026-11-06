@@ -71,7 +71,7 @@ def setup_logging():
     )
 
 
-def load_config():
+def load_config(require_email=True):
     path = os.path.join(BASE_DIR, "config.json")
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
@@ -79,7 +79,7 @@ def load_config():
     else:
         # GitHub Actions 没有 config.json 时，用环境变量拼一份
         cfg = {
-            "menu_file": "menu.xlsx",
+            "menu_file": "menu.csv",
             "canteen": "学员食堂",
             "sender_name": "菜单助手",
             "email": {"smtp_host": "smtp.qq.com", "smtp_port": 465, "use_ssl": True},
@@ -89,7 +89,7 @@ def load_config():
     em["auth_code"] = os.environ.get("QQ_AUTH_CODE", em.get("auth_code", ""))
     if os.environ.get("QQ_TO"):
         em["to"] = [x.strip() for x in os.environ["QQ_TO"].split(",") if x.strip()]
-    if not em.get("user") or not em.get("auth_code") or not em.get("to"):
+    if require_email and (not em.get("user") or not em.get("auth_code") or not em.get("to")):
         raise SystemExit("邮箱信息不完整：请检查 config.json 或 QQ_USER / QQ_AUTH_CODE / QQ_TO 环境变量。")
     return cfg
 
@@ -365,7 +365,7 @@ def main():
     args = parser.parse_args()
 
     setup_logging()
-    cfg = load_config()
+    cfg = load_config(require_email=not args.no_send)
     today = dt.date.today()
     if args.date == "today":
         target = today
