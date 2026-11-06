@@ -76,7 +76,15 @@ jobs:
             git push
           fi
 
+      - name: 发送邮件（备用渠道）
+        env:
+          QQ_USER: ${{ secrets.QQ_USER }}
+          QQ_AUTH_CODE: ${{ secrets.QQ_AUTH_CODE }}
+          QQ_TO: ${{ secrets.QQ_TO }}
+        run: python send_meal.py --meal "$MEAL" --date "$DATE"
+
       - name: 推送到微信
+        continue-on-error: true
         env:
           PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
           REPO: ${{ github.repository }}
