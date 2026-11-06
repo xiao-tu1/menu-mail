@@ -34,7 +34,7 @@ def main():
         raise SystemExit("图片还没生成：" + image_path)
 
     repo = os.environ.get("REPO", "xiao-tu1/menu-mail")
-    image_url = f"https://cdn.jsdelivr.net/gh/{repo}@main/output/{filename}"
+    image_url = f"https://gcore.jsdelivr.net/gh/{repo}@main/output/{filename}"
 
     title = f"{date.month}月{date.day}日 {send_meal.MEAL_NAMES[args.meal]}菜单"
     lines = []
