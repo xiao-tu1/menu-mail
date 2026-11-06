@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""把当天菜单图片推到微信公众号（PushPlus）"""
+"""把当天菜单以文字形式推到微信公众号（PushPlus）"""
 import argparse
 import datetime as dt
 import json
@@ -28,36 +28,29 @@ def main():
     menu_path = os.path.join(BASE_DIR, "menu.csv")
     date, meal, sections = send_meal.read_menu(menu_path, target, args.meal)
 
-    filename = f"{date}_{args.meal}.png"
-    image_path = os.path.join(BASE_DIR, "output", filename)
-    if not os.path.exists(image_path):
-        raise SystemExit("图片还没生成：" + image_path)
-
-    repo = os.environ.get("REPO", "xiao-tu1/menu-mail")
-    image_url = f"https://gcore.jsdelivr.net/gh/{repo}@main/output/{filename}"
-
     title = f"{date.month}月{date.day}日 {send_meal.MEAL_NAMES[args.meal]}菜单"
-    lines = []
+    parts = [f"<h3>{title}</h3>"]
     for cat, items in sections:
         if items:
-            prefix = f"{cat}：" if cat else ""
-            lines.append(prefix + "、".join(items))
-    html = (
-        f"<h2>{title}</h2>"
-        f"<p><img src='{image_url}' style='max-width:100%;border-radius:8px'></p>"
-        + ("<hr>" + "<br>".join(lines) if lines else "")
-    )
+            prefix = f"<b>{cat}</b>：" if cat else ""
+            parts.append(f"<p>{prefix}{'、'.join(items)}</p>")
+    if len(parts) == 1:
+        parts.append("<p>今日暂无菜单</p>")
+    html = "".join(parts)
 
-    token = os.environ["PUSHPLUS_TOKEN"]
-    payload = json.dumps({
-        "token": token,
+    payload = {
+        "token": os.environ["PUSHPLUS_TOKEN"],
         "title": title,
         "content": html,
         "template": "html",
-    }).encode("utf-8")
+    }
+    topic = os.environ.get("PUSHPLUS_TOPIC", "").strip()
+    if topic:
+        payload["topic"] = topic
+
     req = urllib.request.Request(
         "https://www.pushplus.plus/send",
-        data=payload,
+        data=json.dumps(payload).encode("utf-8"),
         headers={"Content-Type": "application/json"},
         method="POST",
     )
