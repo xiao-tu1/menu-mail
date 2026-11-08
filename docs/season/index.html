@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>赛季结算报告</title>
+<style>
+  :root{
+    --gold:#e8c877;
+    --gold-2:#f7e7b0;
+    --gold-3:#a67c2e;
+    --ink:#07070d;
+    --paper:#f6ecd8;
+    --line:rgba(232,200,119,.22);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{
+    background:
+      radial-gradient(ellipse at 50% -10%, #1b1830 0%, #0b0a15 45%, #05050a 100%);
+    color:var(--paper);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+    overflow-x:hidden;
+  }
+  #bg{position:fixed;inset:0;z-index:0;pointer-events:none;}
+
+  /* 顶部进度 */
+  .progress{position:fixed;top:0;left:0;right:0;height:2px;background:rgba(255,255,255,.06);z-index:50;}
+  .progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold-3),var(--gold-2));box-shadow:0 0 10px rgba(232,200,119,.6);transition:width .1s linear;}
+
+  main{position:relative;z-index:2;}
+
+  section{
+    min-height:100vh;min-height:100svh;
+    padding:64px 24px calc(48px + env(safe-area-inset-bottom));
+    display:flex;flex-direction:column;justify-content:center;
+  }
+  section.in{animation:rise .9s cubic-bezier(.2,.8,.2,1) both;}
+  @keyframes rise{
+    from{opacity:0;transform:translateY(26px);}
+    to{opacity:1;transform:none;}
+  }
+
+  .eyebrow{
+    font-size:11px;letter-spacing:.42em;color:#8f7f5a;text-transform:uppercase;
+    margin-bottom:16px;
+  }
+
+  /* 封面 */
+  .cover{align-items:center;text-align:center;}
+  .season-no{
+    font-size:104px;line-height:.95;font-weight:900;letter-spacing:-.02em;
+    background:linear-gradient(180deg,#fff8dd 0%,var(--gold) 45%,#8f6a1f 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 6px 24px rgba(232,200,119,.18));
+  }
+  .season-no span{font-size:34px;vertical-align:super;letter-spacing:0;}
+  .season-title{font-size:26px;font-weight:800;letter-spacing:.18em;margin:20px 0 20px;line-height:1.25;color:#f3e4bf;}
+  .cover .sub{font-size:15px;line-height:1.9;color:#cdbd97;max-width:320px;}
+  .tags{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:24px;width:100%;max-width:340px;}
+  .tag{
+    font-size:11px;color:#d9c79b;border:1px solid var(--line);border-radius:999px;
+    padding:6px 11px;background:rgba(255,255,255,.03);white-space:nowrap;
+  }
+  .scroll-hint{
+    position:absolute;bottom:calc(26px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);
+    font-size:11px;color:#8f7f5a;letter-spacing:.2em;animation:float 1.8s infinite ease-in-out;
+  }
+  @keyframes float{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,6px)}}
+
+  /* 通用标题 */
+  .h2{
+    font-size:13px;letter-spacing:.32em;color:var(--gold);margin:0 0 6px;font-weight:700;
+  }
+  .h2-sub{font-size:22px;font-weight:800;color:#f6ecd8;margin:0 0 24px;letter-spacing:.04em;}
+
+  /* 数据面板 */
+  .stats{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;}
+  .stat{
+    border:1px solid var(--line);border-radius:16px;padding:16px 14px;
+    background:linear-gradient(160deg,rgba(232,200,119,.08),rgba(255,255,255,.02));
+    position:relative;overflow:hidden;min-width:0;
+  }
+  .stat::after{
+    content:"";position:absolute;right:-30px;top:-30px;width:90px;height:90px;border-radius:50%;
+    background:radial-gradient(circle,rgba(232,200,119,.18),transparent 70%);
+  }
+  .stat .ico{font-size:18px;opacity:.95;}
+  .stat .val{font-size:27px;font-weight:900;color:#ffe9b0;line-height:1.2;margin-top:6px;letter-spacing:-.01em;}
+  .stat .val small{font-size:14px;font-weight:700;color:#c9b47f;margin-left:2px;}
+  .stat .lab{font-size:12px;color:#a99770;margin-top:4px;}
+  .stat.wide{grid-column:1 / -1;display:flex;align-items:center;justify-content:space-between;}
+  .stat.wide .val{font-size:24px;margin:0;}
+
+  /* 高光卡片 */
+  .hscroll{
+    display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;
+    margin:0 -24px;padding:4px 24px 18px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .hscroll::-webkit-scrollbar{display:none;}
+  .hcard{
+    flex:0 0 78%;scroll-snap-align:center;
+    border:1px solid var(--line);border-radius:18px;padding:20px 18px;
+    background:linear-gradient(165deg,rgba(255,255,255,.06),rgba(232,200,119,.04));
+    position:relative;min-height:210px;display:flex;flex-direction:column;justify-content:space-between;
+  }
+  .hcard .no{font-size:44px;font-weight:900;color:rgba(232,200,119,.22);line-height:1;}
+  .hcard .kind{font-size:11px;letter-spacing:.18em;color:var(--gold);margin:10px 0 8px;}
+  .hcard h3{font-size:20px;margin:0 0 8px;color:#fff3d4;}
+  .hcard p{font-size:13px;line-height:1.8;color:#c8b891;margin:0;}
+  .hcard .foot{font-size:10px;color:#7d6d4c;letter-spacing:.16em;margin-top:14px;}
+
+  /* 成就墙 */
+  .ach{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .ach-item{
+    border:1px solid var(--line);border-radius:16px;padding:16px 14px;text-align:center;
+    background:rgba(255,255,255,.025);
+  }
+  .ach-item .medal{
+    width:46px;height:46px;margin:0 auto 10px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-size:20px;
+    background:radial-gradient(circle at 35% 30%,#f9e9b8,#c9a54f 70%,#7d5f22);
+    box-shadow:0 6px 18px rgba(232,200,119,.2), inset 0 1px 2px rgba(255,255,255,.6);
+  }
+  .ach-item b{display:block;font-size:13px;color:#f3e3bb;margin-bottom:4px;}
+  .ach-item span{font-size:11px;color:#a08e67;line-height:1.6;}
+
+  /* 总结 */
+  .summary{text-align:center;align-items:center;}
+  .seal{
+    width:78px;height:78px;border-radius:50%;margin:0 auto 26px;
+    border:1px solid rgba(232,200,119,.5);
+    display:flex;align-items:center;justify-content:center;font-size:11px;letter-spacing:.18em;color:var(--gold);
+    background:radial-gradient(circle,rgba(232,200,119,.16),transparent 70%);
+  }
+  .summary p{font-size:14px;line-height:2;color:#c9b891;margin:0 0 18px;max-width:320px;}
+  .summary .big{font-size:30px;font-weight:900;letter-spacing:.12em;margin:22px 0 8px;
+    background:linear-gradient(180deg,#fff8dd,var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .summary .small{font-size:12px;color:#8f7f5a;letter-spacing:.2em;}
+  .share{
+    margin-top:30px;appearance:none;border:1px solid var(--line);background:transparent;
+    color:#d9c79b;border-radius:999px;padding:12px 26px;font-size:13px;letter-spacing:.12em;
+  }
+
+  /* 入场结算 */
+  .loading{
+    position:fixed;inset:0;z-index:100;background:#05050a;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+    transition:opacity .8s ease;
+  }
+  .loading.hide{opacity:0;pointer-events:none;}
+  .loading .logo{font-size:46px;font-weight:900;letter-spacing:.06em;
+    background:linear-gradient(180deg,#fff8dd,var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .loading .txt{font-size:12px;letter-spacing:.3em;color:#8f7f5a;}
+  .bar{width:180px;height:2px;background:rgba(255,255,255,.08);overflow:hidden;border-radius:2px;}
+  .bar i{display:block;height:100%;width:0;background:var(--gold);transition:width .2s linear;}
+</style>
+</head>
+<body>
+<div id="bg"></div>
+<div class="progress"><i id="pg"></i></div>
+
+<main>
+
+  <!-- 封面 -->
+  <section class="cover">
+    <div class="eyebrow">Season Settlement</div>
+    <div class="season-no">S<span id="seasonNo">20</span></div>
+    <div class="season-title" id="coverTitle">圆满结算</div>
+    <p class="sub">恭喜玩家 <b id="playerName">小寿星</b><br>成功解锁新一岁地图</p>
+    <div class="tags">
+      <span class="tag" id="tagDuration">365 天</span>
+      <span class="tag">荣耀寿星</span>
+      <span class="tag">全服限定</span>
+    </div>
+    <div class="scroll-hint">向下滑动查看战绩</div>
+  </section>
+
+  <!-- 数据 -->
+  <section>
+    <div class="h2">CORE DATA</div>
+    <h2 class="h2-sub">核心数据面板</h2>
+    <div class="stats">
+      <div class="stat">
+        <div class="ico">🏆</div>
+        <div class="val"><span class="count" data-to="20">20</span><small>岁</small></div>
+        <div class="lab">新解锁地图</div>
+      </div>
+      <div class="stat">
+        <div class="ico">❤️</div>
+        <div class="val"><span class="count" data-to="100">100</span><small>%</small></div>
+        <div class="lab">快乐值胜率</div>
+      </div>
+      <div class="stat">
+        <div class="ico">🛡️</div>
+        <div class="val">∞</div>
+        <div class="lab">被爱 buff 层数</div>
+      </div>
+      <div class="stat">
+        <div class="ico">⚡</div>
+        <div class="val"><span class="count" data-to="128">128</span><small>次</small></div>
+        <div class="lab">高光时刻触发</div>
+      </div>
+      <div class="stat wide">
+        <div>
+          <div class="ico">🤝</div>
+          <div class="lab">固定组队队友</div>
+        </div>
+        <div class="val">6 人</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 高光 -->
+  <section>
+    <div class="h2">HIGHLIGHTS</div>
+    <h2 class="h2-sub">高光时刻回顾</h2>
+    <div class="hscroll" id="hscroll"></div>
+  </section>
+
+  <!-- 成就 -->
+  <section>
+    <div class="h2">ACHIEVEMENTS</div>
+    <h2 class="h2-sub">赛季成就墙</h2>
+    <div class="ach" id="ach"></div>
+  </section>
+
+  <!-- 总结 -->
+  <section class="summary">
+    <div class="seal">荣 耀<br>寿 星</div>
+    <p id="sum1"></p>
+    <p id="sum2"></p>
+    <div class="big">生日快乐</div>
+    <div class="small">新赛季 · 继续超神</div>
+    <button class="share" id="shareBtn">分享这份战绩</button>
+  </section>
+
+</main>
+
+<script>
+/* ============ 只改这里 ============ */
+const DATA = {
+  name: "小寿星",
+  age: 20,
+  stats: { rate: 100, highlights: 128, teammates: 6 },
+  highlights: [
+    { kind: "极限 CARRY", title: "一个人搞定毕业答辩", text: "从选题到终稿全自己扛，答辩那天全场最稳。", foot: "SEASON MVP" },
+    { kind: "五杀级开心", title: "去了想去的城市", text: "说走就走的那趟旅行，照片到现在还在发。", foot: "BEST MOMENT" },
+    { kind: "最佳辅助", title: "我难的时候你一直在", text: "不需要多说什么，你在就已经赢了。", foot: "BEST SUPPORT" }
+  ],
+  achievements: [
+    { icon: "🎖️", title: "年度最强输出", desc: "把日子过得热气腾腾" },
+    { icon: "🛡️", title: "最佳生存达人", desc: "通关所有难题，满血进新赛季" },
+    { icon: "🤝", title: "全图支援 buff", desc: "朋友需要时永远准时出现" },
+    { icon: "🎂", title: "寿星专属成就", desc: "新一岁满级体验卡，永久生效" }
+  ]
+};
+/* ================================= */
+
+const age = DATA.age;
+document.getElementById("seasonNo").textContent = age;
+
+document.getElementById("playerName").textContent = DATA.name;
+document.getElementById("tagDuration").textContent = "365 天";
+
+/* 数字统计 */
+document.querySelectorAll(".count").forEach(el => {
+  const to = +el.dataset.to;
+  el.dataset.done = "0";
+});
+function runCount(el){
+  if (el.dataset.done === "1") return;
+  el.dataset.done = "1";
+  const to = +el.dataset.to, dur = 900, t0 = performance.now();
+  function step(t){
+    const p = Math.min(1, (t - t0) / dur);
+    el.textContent = Math.round(to * (1 - Math.pow(1 - p, 3)));
+    if (p < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+/* 高光卡 */
+const hs = document.getElementById("hscroll");
+DATA.highlights.forEach((h, i) => {
+  const d = document.createElement("div");
+  d.className = "hcard";
+  d.innerHTML = `<div class="no">0${i + 1}</div>
+    <div><div class="kind">${h.kind}</div><h3>${h.title}</h3><p>${h.text}</p></div>
+    <div class="foot">${h.foot}</div>`;
+  hs.appendChild(d);
+});
+
+/* 成就 */
+const ach = document.getElementById("ach");
+DATA.achievements.forEach(a => {
+  const d = document.createElement("div");
+  d.className = "ach-item";
+  d.innerHTML = `<div class="medal">${a.icon}</div><b>${a.title}</b><span>${a.desc}</span>`;
+  ach.appendChild(d);
+});
+
+/* 总结文案 */
+document.getElementById("sum1").textContent =
+  `S${age - 1} 赛季已圆满落幕。这一年你攒满了勇气、温柔与好运，拿下了属于自己的每一场胜利。`;
+document.getElementById("sum2").textContent =
+  `欢迎进入 S${age} 新赛季：愿你技能全命中，烦恼全闪避，经济永远领先，快乐持续超神。`;
+
+/* 入场动画 */
+const sections = document.querySelectorAll("section");
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add("in");
+      e.target.querySelectorAll(".count").forEach(runCount);
+    }
+  });
+}, { threshold: 0.25 });
+sections.forEach(s => io.observe(s));
+
+/* 滚动进度 */
+const pg = document.getElementById("pg");
+addEventListener("scroll", () => {
+  const h = document.documentElement.scrollHeight - innerHeight;
+  pg.style.width = (h > 0 ? (scrollY / h) * 100 : 0) + "%";
+}, { passive: true });
+
+/* 背景粒子 */
+(function(){
+  const c = document.getElementById("bg");
+  const ctx = c.getContext("2d");
+  let w, h, ps = [];
+  function resize(){
+    w = c.width = innerWidth * devicePixelRatio;
+    h = c.height = innerHeight * devicePixelRatio;
+    c.style.width = innerWidth + "px";
+    c.style.height = innerHeight + "px";
+    ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+    ps = Array.from({length: 42}, () => ({
+      x: Math.random()*innerWidth, y: Math.random()*innerHeight,
+      r: Math.random()*1.4 + .3, s: Math.random()*.25 + .05, a: Math.random()*.5 + .15
+    }));
+  }
+  resize(); addEventListener("resize", resize);
+  (function loop(){
+    ctx.clearRect(0,0,innerWidth,innerHeight);
+    ps.forEach(p => {
+      p.y -= p.s;
+      if (p.y < -4) { p.y = innerHeight + 4; p.x = Math.random()*innerWidth; }
+      ctx.beginPath();
+      ctx.fillStyle = `rgba(232,200,119,${p.a})`;
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fill();
+    });
+    requestAnimationFrame(loop);
+  })();
+})();
+
+
+
+
+/* 深链：#s1 ~ #s4 直接跳到对应板块 */
+window.addEventListener("load", () => {
+  const m = (location.hash || "").match(/^#s(\d)$/);
+  if (!m) return;
+  setTimeout(() => {
+    const el = sections[+m[1]];
+    if (el) el.scrollIntoView({ behavior: "instant", block: "start" });
+  }, 1500);
+});
+/* 分享 */
+document.getElementById("shareBtn").addEventListener("click", async () => {
+  const url = location.href;
+  const text = `${DATA.name} 的 S${age} 赛季结算报告`;
+  if (navigator.share) {
+    try { await navigator.share({ title: text, text, url }); return; } catch(e) {}
+  }
+  try { await navigator.clipboard.writeText(url); alert("链接已复制"); }
+  catch(e) { prompt("复制链接：", url); }
+});
+</script>
+</body>
+</html>
