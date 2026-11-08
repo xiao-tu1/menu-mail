@@ -155,6 +155,56 @@
   .loading .txt{font-size:12px;letter-spacing:.3em;color:#8f7f5a;}
   .bar{width:180px;height:2px;background:rgba(255,255,255,.08);overflow:hidden;border-radius:2px;}
   .bar i{display:block;height:100%;width:0;background:var(--gold);transition:width .2s linear;}
+
+  /* ===== 交互 ===== */
+  .toast{
+    position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));
+    transform:translate(-50%,12px);z-index:60;pointer-events:none;
+    background:rgba(18,14,28,.94);border:1px solid rgba(232,200,119,.35);
+    color:#f3e3bb;font-size:13px;padding:11px 18px;border-radius:999px;
+    opacity:0;transition:.3s ease;max-width:88vw;text-align:center;
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0);}
+
+  .stat{cursor:pointer;transition:transform .18s ease,border-color .3s;}
+  .stat:active{transform:scale(.97);}
+
+  .hcard{cursor:pointer;}
+  .hcard .secret{
+    max-height:0;overflow:hidden;opacity:0;margin-top:0;
+    font-size:12px;line-height:1.75;color:#e8c877;transition:.35s ease;
+  }
+  .hcard.open{border-color:rgba(232,200,119,.55);box-shadow:0 0 26px rgba(232,200,119,.12);}
+  .hcard.open .secret{max-height:90px;opacity:1;margin-top:10px;}
+  .hcard .tap{
+    position:absolute;right:14px;top:14px;font-size:9px;letter-spacing:.18em;color:#7d6d4c;
+  }
+  .swipe-hint{font-size:11px;color:#7d6d4c;letter-spacing:.12em;margin-top:2px;}
+
+  .ach-item{cursor:pointer;transition:transform .18s ease,border-color .3s,box-shadow .3s;}
+  .ach-item:active{transform:scale(.97);}
+  .ach-item.locked .medal{filter:grayscale(1) brightness(.55);}
+  .ach-item.locked b,.ach-item.locked span{opacity:.5;}
+  .ach-item.unlocked{border-color:rgba(232,200,119,.55);box-shadow:0 0 24px rgba(232,200,119,.12);animation:pop .5s;}
+  @keyframes pop{0%{transform:scale(.95)}60%{transform:scale(1.04)}100%{transform:scale(1)}}
+  .ach-item .state{font-size:9px;letter-spacing:.18em;color:#7d6d4c;margin-top:8px;}
+  .ach-item.unlocked .state{color:var(--gold);}
+  .ach-bar{display:flex;align-items:center;gap:10px;margin-top:14px;font-size:11px;color:#a08e67;}
+  .ach-bar .track{flex:1;height:3px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden;}
+  .ach-bar .track i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold-3),var(--gold-2));transition:width .4s;}
+  .ach-tip{font-size:11px;color:#7d6d4c;margin-top:8px;}
+
+  .cta{
+    display:inline-block;margin-top:18px;padding:14px 30px;border-radius:999px;text-decoration:none;
+    font-size:14px;letter-spacing:.1em;color:#2a1d05;font-weight:700;
+    background:linear-gradient(180deg,#ffe6a8,#e8c877);
+    box-shadow:0 10px 26px rgba(232,200,119,.28);transition:.25s;
+  }
+  .cta.disabled{opacity:.4;filter:grayscale(.3);box-shadow:none;}
+  .cta.ready{animation:pulse 1.6s infinite;}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(232,200,119,.35)}50%{box-shadow:0 0 0 12px rgba(232,200,119,0)}}
+  .cta-hint{font-size:11px;color:#7d6d4c;margin-top:10px;}
+  #fx{position:fixed;inset:0;z-index:25;pointer-events:none;}
 </style>
 </head>
 <body>
@@ -217,6 +267,7 @@
     <div class="h2">HIGHLIGHTS</div>
     <h2 class="h2-sub">高光时刻回顾</h2>
     <div class="hscroll" id="hscroll"></div>
+    <div class="swipe-hint">左右滑动 · 点一下卡片看彩蛋</div>
   </section>
 
   <!-- 成就 -->
@@ -224,6 +275,8 @@
     <div class="h2">ACHIEVEMENTS</div>
     <h2 class="h2-sub">赛季成就墙</h2>
     <div class="ach" id="ach"></div>
+    <div class="ach-bar"><span id="achCount">0 / 4</span><div class="track"><i id="achBar"></i></div></div>
+    <div class="ach-tip">点亮全部 4 个成就，才能领取赛季奖励</div>
   </section>
 
   <!-- 总结 -->
@@ -234,8 +287,12 @@
     <div class="big">生日快乐</div>
     <div class="small">新赛季 · 继续超神</div>
     <button class="share" id="shareBtn">分享这份战绩</button>
+    <a class="cta" id="goCandle" href="../birthday/">前往生日现场 →</a>
+    <div class="cta-hint" id="ctaHint">点亮成就有惊喜，也可以直接去吹蜡烛</div>
   </section>
 
+<div class="toast" id="toast"></div>
+<canvas id="fx"></canvas>
 </main>
 
 <script>
@@ -245,9 +302,9 @@ const DATA = {
   age: 20,
   stats: { rate: 100, highlights: 128, teammates: 6 },
   highlights: [
-    { kind: "极限 CARRY", title: "一个人搞定毕业答辩", text: "从选题到终稿全自己扛，答辩那天全场最稳。", foot: "SEASON MVP" },
-    { kind: "五杀级开心", title: "去了想去的城市", text: "说走就走的那趟旅行，照片到现在还在发。", foot: "BEST MOMENT" },
-    { kind: "最佳辅助", title: "我难的时候你一直在", text: "不需要多说什么，你在就已经赢了。", foot: "BEST SUPPORT" }
+    { kind: "极限 CARRY", title: "一个人搞定毕业答辩", text: "从选题到终稿全自己扛，答辩那天全场最稳。", foot: "SEASON MVP", secret: "彩蛋：答辩前一晚你还在改 PPT，第二天照样全票通过。" },
+    { kind: "五杀级开心", title: "去了想去的城市", text: "说走就走的那趟旅行，照片到现在还在发。", foot: "BEST MOMENT", secret: "彩蛋：那趟旅行你只带了一个小包，却装下了整年的快乐。" },
+    { kind: "最佳辅助", title: "我难的时候你一直在", text: "不需要多说什么，你在就已经赢了。", foot: "BEST SUPPORT", secret: "彩蛋：你以为我没发现，其实每次都是你先找我。" }
   ],
   achievements: [
     { icon: "🎖️", title: "年度最强输出", desc: "把日子过得热气腾腾" },
@@ -286,19 +343,69 @@ const hs = document.getElementById("hscroll");
 DATA.highlights.forEach((h, i) => {
   const d = document.createElement("div");
   d.className = "hcard";
-  d.innerHTML = `<div class="no">0${i + 1}</div>
-    <div><div class="kind">${h.kind}</div><h3>${h.title}</h3><p>${h.text}</p></div>
+  d.innerHTML = `<div class="no">0${i + 1}</div><div class="tap">TAP</div>
+    <div><div class="kind">${h.kind}</div><h3>${h.title}</h3><p>${h.text}</p>
+    <div class="secret">${h.secret || ""}</div></div>
     <div class="foot">${h.foot}</div>`;
+  d.addEventListener("click", () => {
+    d.classList.toggle("open");
+    if (d.classList.contains("open")) { toast("彩蛋已展开"); tick(6); }
+  });
   hs.appendChild(d);
 });
 
 /* 成就 */
 const ach = document.getElementById("ach");
+let achUnlocked = 0;
 DATA.achievements.forEach(a => {
   const d = document.createElement("div");
-  d.className = "ach-item";
-  d.innerHTML = `<div class="medal">${a.icon}</div><b>${a.title}</b><span>${a.desc}</span>`;
+  d.className = "ach-item locked";
+  d.innerHTML = `<div class="medal">${a.icon}</div><b>${a.title}</b><span>${a.desc}</span><div class="state">未解锁 · 点一下</div>`;
+  d.addEventListener("click", () => {
+    if (d.classList.contains("unlocked")) { toast("这个成就已经点亮啦"); return; }
+    d.classList.remove("locked");
+    d.classList.add("unlocked");
+    d.querySelector(".state").textContent = "已点亮";
+    const n = document.querySelectorAll(".ach-item.unlocked").length;
+    achUnlocked = n;
+    document.getElementById("achCount").textContent = n + " / 4";
+    document.getElementById("achBar").style.width = (n / 4 * 100) + "%";
+    tick(n);
+    if (navigator.vibrate) navigator.vibrate(20);
+    toast("成就解锁：" + a.title);
+    if (n >= 4) {
+      chord();
+      burst(120);
+      toast("全部成就点亮，隐藏彩蛋已触发");
+    }
+  });
   ach.appendChild(d);
+});
+
+/* 统计卡点击 */
+const NOTES = [
+  "新地图已解锁：第 " + age + " 岁，难度继续上调。",
+  "快乐值胜率 100%，系统已认定你是快乐本身。",
+  "被爱 buff 叠满，无法驱散。",
+  "高光时刻 128 次，其中 127 次我没来得及拍照。",
+  "固定队友好 6 人，随叫随到。"
+];
+document.querySelectorAll(".stat").forEach((el, i) => {
+  el.addEventListener("click", () => toast(NOTES[i] || "已记录"));
+});
+
+/* 点击 S20 五次 */
+let logoClicks = 0;
+document.querySelector(".season-no").addEventListener("click", () => {
+  logoClicks++;
+  if (logoClicks >= 5) {
+    logoClicks = 0;
+    toast("隐藏成就：手速达人");
+    chord();
+    burst(100);
+  } else {
+    tick(2);
+  }
 });
 
 /* 总结文案 */
@@ -369,6 +476,83 @@ window.addEventListener("load", () => {
     if (el) el.scrollIntoView({ behavior: "instant", block: "start" });
   }, 1500);
 });
+/* ===== 通用交互 ===== */
+let toastTimer = null;
+function toast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("show"), 1800);
+}
+
+let AC = null;
+function audio() {
+  if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)();
+  if (AC.state === "suspended") AC.resume();
+  return AC;
+}
+function tone(freq, dur, vol) {
+  try {
+    const c = audio(), o = c.createOscillator(), g = c.createGain();
+    o.type = "sine"; o.frequency.value = freq;
+    o.connect(g); g.connect(c.destination);
+    const t = c.currentTime;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol, t + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.start(t); o.stop(t + dur + 0.02);
+  } catch (e) {}
+}
+function tick(n) { tone(520 + (n || 1) * 55, 0.16, 0.08); }
+function chord() { [523, 659, 784, 1046].forEach((f, i) => setTimeout(() => tone(f, 0.5, 0.12), i * 90)); }
+
+const fx = document.getElementById("fx");
+const fctx = fx.getContext("2d");
+let fxParts = [], fxOn = false;
+function fxResize() {
+  fx.width = innerWidth * devicePixelRatio;
+  fx.height = innerHeight * devicePixelRatio;
+  fx.style.width = innerWidth + "px";
+  fx.style.height = innerHeight + "px";
+  fctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+}
+fxResize(); addEventListener("resize", fxResize);
+function burst(n) {
+  const colors = ["#ff8fb1", "#ffd479", "#7ee7c1", "#b79bff", "#fff", "#ff9f6b"];
+  for (let i = 0; i < (n || 90); i++) {
+    fxParts.push({
+      x: innerWidth / 2 + (Math.random() - 0.5) * 100,
+      y: innerHeight * 0.45,
+      vx: (Math.random() - 0.5) * 9,
+      vy: -Math.random() * 11 - 2,
+      g: 0.3 + Math.random() * 0.1,
+      w: 4 + Math.random() * 6,
+      h: 7 + Math.random() * 7,
+      rot: Math.random() * Math.PI,
+      vr: (Math.random() - 0.5) * 0.3,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      life: 1
+    });
+  }
+  if (!fxOn) { fxOn = true; fxLoop(); }
+}
+function fxLoop() {
+  fctx.clearRect(0, 0, innerWidth, innerHeight);
+  fxParts.forEach(p => {
+    p.vy += p.g; p.x += p.vx; p.y += p.vy; p.vx *= 0.995; p.rot += p.vr; p.life -= 0.004;
+    fctx.save();
+    fctx.translate(p.x, p.y); fctx.rotate(p.rot);
+    fctx.globalAlpha = Math.max(0, Math.min(1, p.life));
+    fctx.fillStyle = p.color;
+    fctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+    fctx.restore();
+  });
+  fxParts = fxParts.filter(p => p.life > 0 && p.y < innerHeight + 60);
+  if (fxParts.length) requestAnimationFrame(fxLoop);
+  else { fxOn = false; fctx.clearRect(0, 0, innerWidth, innerHeight); }
+}
+
 /* 分享 */
 document.getElementById("shareBtn").addEventListener("click", async () => {
   const url = location.href;
