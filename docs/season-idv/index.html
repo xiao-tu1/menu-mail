@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>赛季档案 · 第五人格</title>
+<style>
+  :root{
+    --paper:#d9ccb4;
+    --paper-2:#c9b998;
+    --ink:#241f18;
+    --red:#7c2b2b;
+    --gold:#b08d57;
+    --teal:#1f3b39;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{
+    background:radial-gradient(circle at 50% 8%, #16211e 0%, #0a0e0d 44%, #040505 100%);
+    color:#d9ccb4;
+    font-family:Georgia,"Songti SC","STSong","SimSun",serif;
+    overflow-x:hidden;
+  }
+  #bg{position:fixed;inset:0;z-index:0;pointer-events:none;}
+
+  .fog{position:fixed;inset:-25%;z-index:0;pointer-events:none;filter:blur(55px);opacity:.55;}
+  .fog i{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(120,160,150,.22),transparent 66%);animation:drift 28s ease-in-out infinite alternate;}
+  .fog i:nth-child(1){width:70vw;height:70vw;left:-15%;top:0;animation-duration:34s;}
+  .fog i:nth-child(2){width:60vw;height:60vw;right:-18%;top:30%;background:radial-gradient(circle,rgba(176,141,87,.14),transparent 66%);animation-delay:-9s;animation-duration:40s;}
+  .fog i:nth-child(3){width:65vw;height:65vw;left:12%;bottom:-12%;background:radial-gradient(circle,rgba(80,110,105,.20),transparent 68%);animation-delay:-16s;animation-duration:46s;}
+  @keyframes drift{0%{transform:translate(0,0) scale(1)}50%{transform:translate(5vw,-3vh) scale(1.1)}100%{transform:translate(-4vw,4vh) scale(.95)}}
+
+  .clock{
+    position:fixed;left:50%;top:60px;width:560px;height:560px;transform:translateX(-50%);
+    border-radius:50%;z-index:0;pointer-events:none;opacity:.5;
+    background:repeating-conic-gradient(rgba(176,141,87,.14) 0deg .4deg, transparent .4deg 15deg);
+    -webkit-mask:radial-gradient(circle, transparent 58%, #000 59%, #000 62%, transparent 63%);
+            mask:radial-gradient(circle, transparent 58%, #000 59%, #000 62%, transparent 63%);
+  }
+  .clock::after{
+    content:"";position:absolute;inset:38px;border-radius:50%;border:1px solid rgba(176,141,87,.10);
+  }
+  .grain{
+    position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.07;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");
+  }
+  .vignette{
+    position:fixed;inset:0;z-index:1;pointer-events:none;
+    background:radial-gradient(ellipse at 50% 40%, transparent 36%, rgba(0,0,0,.72) 100%);
+  }
+
+  main{position:relative;z-index:2;max-width:430px;margin:0 auto;}
+  section{
+    min-height:100vh;min-height:100svh;
+    padding:64px 24px calc(46px + env(safe-area-inset-bottom));
+    display:flex;flex-direction:column;justify-content:center;
+  }
+  section.in{animation:rise .9s cubic-bezier(.2,.8,.2,1) both;}
+  @keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+
+  .small{font-size:10px;letter-spacing:.4em;color:#8d7c5d;text-transform:uppercase;}
+  .rule{height:1px;background:linear-gradient(90deg,transparent,rgba(176,141,87,.45),transparent);margin:14px 0;}
+
+  /* 封面 */
+  .cover{align-items:center;text-align:center;}
+  .cover .case{
+    font-size:10px;letter-spacing:.42em;color:#8d7c5d;margin-bottom:8px;
+  }
+  .big-s{
+    font-size:96px;line-height:1;font-weight:700;letter-spacing:.04em;
+    color:#d9c6a0;text-shadow:0 4px 26px rgba(0,0,0,.6);
+    font-family:Georgia,"Times New Roman",serif;
+  }
+  .big-s span{font-size:34px;vertical-align:super;color:var(--gold);}
+  .cover h1{font-size:24px;letter-spacing:.3em;font-weight:400;margin:14px 0 4px;color:#e6d8ba;}
+  .cover .sub{font-size:12px;letter-spacing:.18em;color:#9c8b6a;line-height:2;margin:6px 0 22px;}
+  .label{
+    width:100%;max-width:300px;background:linear-gradient(160deg,#e2d6bf,#cbbb9c);
+    color:var(--ink);padding:16px 18px;position:relative;text-align:left;
+    box-shadow:0 16px 34px rgba(0,0,0,.45);transform:rotate(-1.2deg);
+  }
+  .label::before{
+    content:"";position:absolute;left:50%;top:-9px;transform:translateX(-50%) rotate(-2deg);
+    width:74px;height:20px;background:rgba(228,214,186,.55);
+    box-shadow:0 1px 2px rgba(0,0,0,.15);
+  }
+  .label .row{display:flex;justify-content:space-between;font-size:12px;line-height:2;border-bottom:1px dashed rgba(36,31,24,.25);}
+  .label .row:last-child{border:0;}
+  .label b{font-weight:700;letter-spacing:.08em;}
+  .tags{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:20px;}
+  .tag{font-size:10px;letter-spacing:.16em;color:#a9976f;border:1px solid rgba(176,141,87,.28);padding:6px 10px;border-radius:2px;}
+  .seal{
+    width:86px;height:86px;margin:26px auto 0;border-radius:48% 52% 50% 50%;
+    background:radial-gradient(circle at 38% 30%,#a34242,#6e2222 70%,#4c1414);
+    box-shadow:0 8px 20px rgba(0,0,0,.5), inset 0 2px 4px rgba(255,255,255,.18);
+    display:flex;align-items:center;justify-content:center;color:#e8c9a8;font-size:13px;letter-spacing:.18em;
+    cursor:pointer;transition:transform .2s,opacity .4s;position:relative;
+  }
+  .seal:active{transform:scale(.94);}
+  .seal.broken{opacity:0;transform:scale(1.35) rotate(8deg);pointer-events:none;}
+  .seal-hint{font-size:10px;letter-spacing:.24em;color:#8d7c5d;margin-top:10px;}
+  .scroll-hint{font-size:10px;letter-spacing:.3em;color:#7f7054;margin-top:28px;animation:float 2s infinite;}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
+
+  /* 通用标题 */
+  .sec-head{margin-bottom:22px;}
+  .sec-head .small{display:block;margin-bottom:6px;}
+  .sec-head h2{font-size:22px;letter-spacing:.16em;font-weight:400;color:#e6d8ba;margin:0;}
+
+  /* 数据像档案 */
+  .record{background:linear-gradient(160deg,#e0d4bc,#cdbc9c);color:var(--ink);padding:20px 18px;box-shadow:0 18px 40px rgba(0,0,0,.45);transform:rotate(.6deg);}
+  .rec-row{display:flex;align-items:baseline;gap:8px;font-size:13px;line-height:2.6;border-bottom:1px dotted rgba(36,31,24,.28);}
+  .rec-row:last-child{border:0;}
+  .rec-row .k{letter-spacing:.1em;color:#4a4030;}
+  .rec-row .dots{flex:1;border-bottom:1px dotted rgba(36,31,24,.25);transform:translateY(-4px);}
+  .rec-row .v{font-size:20px;font-weight:700;letter-spacing:.03em;}
+  .rec-row .v small{font-size:11px;font-weight:400;margin-left:1px;}
+
+  /* 回放 */
+  .replays{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -24px;padding:4px 24px 18px;}
+  .replays::-webkit-scrollbar{display:none;}
+  .shot{
+    flex:0 0 76%;scroll-snap-align:center;background:#e3d7c0;color:var(--ink);
+    padding:10px 10px 16px;box-shadow:0 16px 36px rgba(0,0,0,.5);position:relative;transform:rotate(-1deg);
+  }
+  .shot:nth-child(2n){transform:rotate(1deg);}
+  .shot::before{
+    content:"";position:absolute;left:50%;top:-8px;transform:translateX(-50%) rotate(-2deg);
+    width:64px;height:18px;background:rgba(230,216,190,.6);
+  }
+  .shot .ph{
+    height:128px;background:linear-gradient(135deg,#8e9d92,#5d6b63 55%,#39443f);
+    display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.35);
+    font-size:10px;letter-spacing:.3em;position:relative;overflow:hidden;
+  }
+  .shot .ph::after{
+    content:"";position:absolute;inset:0;
+    background:repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 1px,transparent 1px 4px);
+  }
+  .shot .cap{display:flex;justify-content:space-between;font-size:10px;letter-spacing:.12em;color:#5a4d38;margin-top:8px;}
+  .shot h3{font-size:15px;margin:6px 0 4px;letter-spacing:.06em;}
+  .shot p{font-size:11px;line-height:1.8;color:#4a4030;margin:0;}
+  .shot .note{
+    max-height:0;overflow:hidden;opacity:0;font-size:11px;line-height:1.8;color:#6e2222;
+    border-top:1px dashed rgba(36,31,24,.3);margin-top:0;transition:.35s;
+  }
+  .shot.open .note{max-height:80px;opacity:1;margin-top:8px;padding-top:8px;}
+  .shot .tap{font-size:9px;letter-spacing:.2em;color:#8a7a5c;margin-top:8px;}
+
+  /* 演绎之星 */
+  .stars{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:4px;}
+  .stamp{
+    aspect-ratio:1/1;border:2px dashed rgba(124,43,43,.45);border-radius:50%;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+    color:#c9b998;position:relative;cursor:pointer;transition:transform .2s;
+    transform:rotate(-6deg);padding:10px;
+  }
+  .stamp:nth-child(2n){transform:rotate(5deg);}
+  .stamp .ico{font-size:22px;margin-bottom:6px;filter:grayscale(.45) opacity(.85);}
+  .stamp b{font-size:12px;letter-spacing:.08em;font-weight:400;color:#d9ccb4;}
+  .stamp span{font-size:9px;color:#9c8b6a;margin-top:3px;line-height:1.5;}
+  .stamp.stamped{border:2px solid rgba(124,43,43,.85);color:#8f3a3a;background:rgba(124,43,43,.07);animation:stampIn .35s;}
+  .stamp.stamped .ico{filter:none;}
+  .stamp.stamped b,.stamp.stamped span{color:#d99a9a;}
+  .stamp.stamped::after{
+    content:"已授予";position:absolute;bottom:12px;font-size:9px;letter-spacing:.2em;color:#d99a9a;
+  }
+  @keyframes stampIn{0%{transform:scale(1.4) rotate(-12deg);opacity:.2}100%{transform:scale(1) rotate(-6deg);opacity:1}}
+  .stamp-count{font-size:11px;letter-spacing:.2em;color:#8d7c5d;margin-top:18px;}
+
+  /* 结案 */
+  .letter{
+    background:linear-gradient(160deg,#e4d8c1,#d3c3a4);color:var(--ink);
+    padding:26px 22px;box-shadow:0 20px 44px rgba(0,0,0,.5);position:relative;
+  }
+  .letter .lines{position:absolute;inset:0;pointer-events:none;opacity:.5;
+    background:repeating-linear-gradient(180deg,transparent 0 31px,rgba(36,31,24,.14) 31px 32px);}
+  .letter p{font-size:13px;line-height:2.4;margin:0 0 12px;position:relative;}
+  .letter .sign{text-align:right;font-size:13px;margin-top:18px;position:relative;}
+  .letter .stamp2{
+    position:absolute;right:18px;bottom:54px;width:70px;height:70px;border-radius:50%;
+    border:2px solid rgba(124,43,43,.7);color:#7c2b2b;transform:rotate(-14deg);
+    display:flex;align-items:center;justify-content:center;font-size:11px;letter-spacing:.12em;
+    opacity:.07;z-index:0;font-size:18px;
+  }
+  .letter p,.letter .sign{position:relative;z-index:1;}
+  .cta{
+    display:inline-block;margin-top:22px;padding:13px 28px;text-decoration:none;
+    font-size:13px;letter-spacing:.18em;color:#e8d9ba;border:1px solid rgba(176,141,87,.5);
+    background:rgba(124,43,43,.18);
+  }
+  .switch{display:block;margin-top:18px;font-size:11px;letter-spacing:.16em;color:#8d7c5d;text-decoration:none;}
+
+  .toast{
+    position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));transform:translate(-50%,12px);
+    background:rgba(20,18,14,.95);border:1px solid rgba(176,141,87,.35);color:#e6d8ba;
+    font-size:12px;letter-spacing:.08em;padding:10px 16px;border-radius:2px;z-index:60;
+    opacity:0;transition:.3s;pointer-events:none;max-width:88vw;text-align:center;
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0);}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+<div class="fog"><i></i><i></i><i></i></div>
+<div class="clock"></div>
+<div class="grain"></div>
+<div class="vignette"></div>
+
+<main>
+
+  <!-- 封面 -->
+  <section class="cover in">
+    <div class="case">IDENTITY V · SEASON ARCHIVE</div>
+    <div class="big-s">S<span id="ageSup">20</span></div>
+    <h1>赛季档案</h1>
+    <div class="sub">第 <span id="ageTxt">20</span> 赛季 · 已封存<br>档案编号 NO.<span id="caseNo">20-1202</span></div>
+
+    <div class="label">
+      <div class="row"><span>玩家姓名</span><b id="playerName">小寿星</b></div>
+      <div class="row"><span>档案状态</span><b>已封存</b></div>
+      <div class="row"><span>密级</span><b>仅本人可见</b></div>
+      <div class="row"><span>结案日期</span><b>12 月 2 日</b></div>
+    </div>
+
+    <div class="tags">
+      <span class="tag">365 天</span>
+      <span class="tag">荣耀寿星</span>
+      <span class="tag">全服限定</span>
+    </div>
+
+    <div class="seal" id="seal">启 封</div>
+    <div class="seal-hint" id="sealHint">轻触火漆印，开启档案</div>
+    <div class="scroll-hint">向下滑动翻阅</div>
+  </section>
+
+  <!-- 数据 -->
+  <section>
+    <div class="sec-head">
+      <span class="small">MATCH RECORD</span>
+      <h2>对局数据</h2>
+    </div>
+    <div class="record">
+      <div class="rec-row"><span class="k">逃脱次数</span><span class="dots"></span><span class="v"><span class="count" data-to="365">365</span><small>次</small></span></div>
+      <div class="rec-row"><span class="k">破译进度</span><span class="dots"></span><span class="v"><span class="count" data-to="100">100</span><small>%</small></span></div>
+      <div class="rec-row"><span class="k">牵制时长</span><span class="dots"></span><span class="v">∞</span></div>
+      <div class="rec-row"><span class="k">救援次数</span><span class="dots"></span><span class="v"><span class="count" data-to="128">128</span><small>次</small></span></div>
+      <div class="rec-row"><span class="k">固定队友</span><span class="dots"></span><span class="v">6<small>人</small></span></div>
+    </div>
+    <div class="primary" style="font-size:11px;letter-spacing:.14em;color:#8d7c5d;margin-top:14px;text-align:center;">点击下方回放与徽章，可继续翻阅档案</div>
+  </section>
+
+  <!-- 回放 -->
+  <section>
+    <div class="sec-head">
+      <span class="small">KEY REPLAYS</span>
+      <h2>关键回放</h2>
+    </div>
+    <div class="replays" id="replays"></div>
+  </section>
+
+  <!-- 演绎之星 -->
+  <section>
+    <div class="sec-head">
+      <span class="small">DEDUCTION STARS</span>
+      <h2>演绎之星</h2>
+    </div>
+    <div class="stars" id="stars"></div>
+    <div class="stamp-count" id="stampCount">已授予 0 / 4</div>
+  </section>
+
+  <!-- 结案 -->
+  <section>
+    <div class="sec-head">
+      <span class="small">CASE CLOSED</span>
+      <h2>结案陈词</h2>
+    </div>
+    <div class="letter">
+      <div class="lines"></div>
+      <p id="p1"></p>
+      <p id="p2"></p>
+      <div class="sign">—— 你的老队友</div>
+      <div class="stamp2">生日快乐</div>
+    </div>
+    <a class="cta" href="../birthday/">前往生日现场 →</a>
+    <a class="switch" href="../season/">← 看看王者荣耀版</a>
+  </section>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const D = {
+  name: "小寿星",
+  age: 20,
+  replays: [
+    { no: "REPLAY 01", tag: "极限牵制", title: "一个人搞定毕业答辩", text: "从选题到终稿全自己扛，答辩那天全场最稳。", note: "档案备注：答辩前一晚还在改 PPT，第二天照样全票通过。" },
+    { no: "REPLAY 02", tag: "完美逃脱", title: "去了想去的城市", text: "说走就走的那趟旅行，照片到现在还在发。", note: "档案备注：只带了一个小包，却装下了整年的快乐。" },
+    { no: "REPLAY 03", tag: "最佳救援", title: "我难的时候你一直在", text: "不需要多说什么，你在就已经赢了。", note: "档案备注：你以为我没发现，其实每次都是你先找我。" }
+  ],
+  stars: [
+    { icon: "🎖️", title: "年度最强输出", desc: "把日子过得热气腾腾" },
+    { icon: "🛡️", title: "最佳生存达人", desc: "通关所有难题，满血进新赛季" },
+    { icon: "🤝", title: "全图支援", desc: "朋友需要时准时出现" },
+    { icon: "🎂", title: "寿星专属", desc: "新一岁满级体验卡" }
+  ]
+};
+
+const age = D.age;
+document.getElementById("ageSup").textContent = age;
+document.getElementById("ageTxt").textContent = age;
+document.getElementById("caseNo").textContent = age + "-1202";
+document.getElementById("playerName").textContent = D.name;
+
+/* 数字 */
+document.querySelectorAll(".count").forEach(el => { el.dataset.done = "0"; });
+function runCount(el){
+  if (el.dataset.done === "1") return;
+  el.dataset.done = "1";
+  const to = +el.dataset.to, t0 = performance.now();
+  (function step(t){
+    const p = Math.min(1, (t - t0) / 900);
+    el.textContent = Math.round(to * (1 - Math.pow(1 - p, 3)));
+    if (p < 1) requestAnimationFrame(step);
+  })(t0);
+}
+
+/* 回放 */
+const box = document.getElementById("replays");
+D.replays.forEach(r => {
+  const d = document.createElement("div");
+  d.className = "shot";
+  d.innerHTML = `<div class="ph">PHOTO</div>
+    <div class="cap"><span>${r.no}</span><span>${r.tag}</span></div>
+    <h3>${r.title}</h3><p>${r.text}</p>
+    <div class="note">${r.note}</div>
+    <div class="tap">轻触查看档案备注</div>`;
+  d.addEventListener("click", () => {
+    d.classList.toggle("open");
+    if (d.classList.contains("open")) { toast("档案备注已展开"); thud(1); }
+  });
+  box.appendChild(d);
+});
+
+/* 徽章 */
+let stamped = 0;
+const sbox = document.getElementById("stars");
+D.stars.forEach((s) => {
+  const d = document.createElement("div");
+  d.className = "stamp";
+  d.innerHTML = `<div class="ico">${s.icon}</div><b>${s.title}</b><span>${s.desc}</span>`;
+  d.addEventListener("click", () => {
+    if (d.classList.contains("stamped")) { toast("这枚徽章已经盖章了"); return; }
+    d.classList.add("stamped");
+    stamped++;
+    document.getElementById("stampCount").textContent = "已授予 " + stamped + " / 4";
+    thud(2); vibrate();
+    toast("盖章：" + s.title);
+    if (stamped >= 4) { toast("全部演绎之星已授予"); thud(3); }
+  });
+  sbox.appendChild(d);
+});
+
+/* 火漆印 */
+document.getElementById("seal").addEventListener("click", () => {
+  const s = document.getElementById("seal");
+  if (s.classList.contains("broken")) return;
+  s.classList.add("broken");
+  document.getElementById("sealHint").textContent = "档案已启封";
+  thud(4);
+  toast("火漆印已拆，档案开启");
+});
+
+/* 进场 */
+const sections = document.querySelectorAll("section");
+const io = new IntersectionObserver(es => {
+  es.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add("in");
+      e.target.querySelectorAll(".count").forEach(runCount);
+    }
+  });
+}, { threshold: .25 });
+sections.forEach(s => io.observe(s));
+
+/* toast */
+let tt;
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(tt);
+  tt = setTimeout(() => t.classList.remove("show"), 1700);
+}
+
+/* 音效 */
+let AC;
+function audio(){
+  if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)();
+  if (AC.state === "suspended") AC.resume();
+  return AC;
+}
+function thud(n){
+  try{
+    const c = audio(), o = c.createOscillator(), g = c.createGain();
+    o.type = "triangle";
+    o.frequency.value = 180 - (n || 1) * 12;
+    o.connect(g); g.connect(c.destination);
+    const t = c.currentTime;
+    g.gain.setValueAtTime(.0001, t);
+    g.gain.exponentialRampToValueAtTime(.18, t + .01);
+    g.gain.exponentialRampToValueAtTime(.0001, t + .28);
+    o.start(t); o.stop(t + .3);
+  }catch(e){}
+}
+function vibrate(){ if (navigator.vibrate) navigator.vibrate(18); }
+
+/* 背景粒子（灰尘） */
+(function(){
+  const c = document.getElementById("bg"), ctx = c.getContext("2d");
+  let w, h, ps = [];
+  function resize(){
+    w = c.width = innerWidth * devicePixelRatio;
+    h = c.height = innerHeight * devicePixelRatio;
+    c.style.width = innerWidth + "px"; c.style.height = innerHeight + "px";
+    ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+    ps = Array.from({length: 34}, () => ({
+      x: Math.random()*innerWidth, y: Math.random()*innerHeight,
+      r: Math.random()*1.3 + .3, s: Math.random()*.18 + .04, a: Math.random()*.35 + .08
+    }));
+  }
+  resize(); addEventListener("resize", resize);
+  (function loop(){
+    ctx.clearRect(0,0,innerWidth,innerHeight);
+    ps.forEach(p => {
+      p.y -= p.s;
+      if (p.y < -4) { p.y = innerHeight + 4; p.x = Math.random()*innerWidth; }
+      ctx.beginPath();
+      ctx.fillStyle = `rgba(217,204,180,${p.a})`;
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fill();
+    });
+    requestAnimationFrame(loop);
+  })();
+})();
+
+/* 结案文案 */
+document.getElementById("p1").textContent =
+  `S${age - 1} 赛季已结案。卷宗里记录着你这一年的每一次逃脱、每一次救援，和每一次把难题甩在身后的瞬间。`;
+document.getElementById("p2").textContent =
+  `现宣布：S${age} 赛季正式开启。愿你继续满血、继续超神，也继续做那个把日子过得热气腾腾的人。`;
+</script>
+</body>
+</html>
