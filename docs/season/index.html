@@ -205,10 +205,47 @@
   @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(232,200,119,.35)}50%{box-shadow:0 0 0 12px rgba(232,200,119,0)}}
   .cta-hint{font-size:11px;color:#7d6d4c;margin-top:10px;}
   #fx{position:fixed;inset:0;z-index:25;pointer-events:none;}
+
+  /* ===== 背景层次 ===== */
+  .aurora{position:fixed;inset:-25%;z-index:0;pointer-events:none;filter:blur(80px);opacity:.62;}
+  .aurora i{position:absolute;border-radius:50%;mix-blend-mode:screen;animation:drift 22s ease-in-out infinite alternate;}
+  .aurora i:nth-child(1){width:62vw;height:62vw;left:-12%;top:2%;background:radial-gradient(circle,#5b3a8f 0%,rgba(91,58,143,0) 68%);}
+  .aurora i:nth-child(2){width:55vw;height:55vw;right:-14%;top:24%;background:radial-gradient(circle,#8a6a2a 0%,rgba(138,106,42,0) 66%);animation-delay:-7s;animation-duration:26s;}
+  .aurora i:nth-child(3){width:58vw;height:58vw;left:18%;bottom:-8%;background:radial-gradient(circle,#1f5a5a 0%,rgba(31,90,90,0) 68%);animation-delay:-13s;animation-duration:30s;}
+  @keyframes drift{
+    0%{transform:translate(0,0) scale(1);}
+    50%{transform:translate(6vw,-4vh) scale(1.12);}
+    100%{transform:translate(-4vw,5vh) scale(.96);}
+  }
+  .grain{
+    position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.055;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");
+  }
+  .vignette{
+    position:fixed;inset:0;z-index:1;pointer-events:none;
+    background:radial-gradient(ellipse at 50% 38%,rgba(0,0,0,0) 38%,rgba(0,0,0,.62) 100%);
+  }
+  .watermark{
+    position:fixed;right:-26px;bottom:-46px;z-index:0;pointer-events:none;
+    font-size:240px;font-weight:900;letter-spacing:-.04em;line-height:.8;
+    color:rgba(232,200,119,.045);font-family:Georgia,serif;
+  }
+  .cover{position:relative;}
+  .cover::before,.cover::after{
+    content:"";position:absolute;left:50%;top:50%;border-radius:50%;pointer-events:none;
+    transform:translate(-50%,-50%);
+  }
+  .cover::before{width:330px;height:330px;border:1px solid rgba(232,200,119,.10);}
+  .cover::after{width:420px;height:420px;border:1px dashed rgba(232,200,119,.06);}
+  .switch{display:block;margin-top:14px;font-size:11px;letter-spacing:.16em;color:#8d7c5d;text-decoration:none;}
 </style>
 </head>
 <body>
-<div id="bg"></div>
+<canvas id="bg"></canvas>
+<div class="aurora"><i></i><i></i><i></i></div>
+<div class="grain"></div>
+<div class="vignette"></div>
+<div class="watermark">S20</div>
 <div class="progress"><i id="pg"></i></div>
 
 <main>
@@ -288,6 +325,7 @@
     <div class="small">新赛季 · 继续超神</div>
     <button class="share" id="shareBtn">分享这份战绩</button>
     <a class="cta" id="goCandle" href="../birthday/">前往生日现场 →</a>
+    <a class="switch" href="../season-idv/">看看第五人格版 →</a>
     <div class="cta-hint" id="ctaHint">点亮成就有惊喜，也可以直接去吹蜡烛</div>
   </section>
 
