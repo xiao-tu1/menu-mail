@@ -239,6 +239,15 @@
 
   .toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));transform:translate(-50%,12px);background:rgba(20,18,14,.95);border:1px solid rgba(176,141,87,.35);color:#e6d8ba;font-size:12px;letter-spacing:.08em;padding:10px 16px;border-radius:2px;z-index:90;opacity:0;transition:.3s;pointer-events:none;max-width:88vw;text-align:center;}
   .toast.show{opacity:1;transform:translate(-50%,0);}
+
+  .shot .ph img{width:100%;height:100%;object-fit:cover;display:block;position:relative;z-index:1;}
+  .shot .ph img.top{object-position:50% 12%;}
+  .shot .ph-badge{
+    position:absolute;left:8px;bottom:8px;z-index:2;
+    font-size:8.5px;letter-spacing:.12em;color:#f6e7c8;
+    background:rgba(16,12,8,.72);border:1px solid rgba(232,200,119,.45);
+    padding:3px 7px;
+  }
 </style>
 </head>
 <body>
@@ -346,8 +355,8 @@ const D = {
   name: "勤勉鱼",
   age: 20,
   replays: [
-    { no: "REPLAY 01", tag: "丝绸获奖", cls: "p1", title: "丝绸之路朗诵大赛", text: "站上舞台的那一刻，声音比灯光还亮。", note: "档案备注：稿子改了很多遍，最后几乎背下来了。" },
-    { no: "REPLAY 02", tag: "国庆表演", cls: "p2", title: "国庆汇演", text: "台下的掌声，是那年最响的一次。", note: "档案备注：演出服到现在还留着。" },
+    { no: "REPLAY 01", tag: "丝绸获奖", cls: "p1", title: "丝绸之路朗诵大赛", text: "第八届丝路朗诵大会，全国总展演三等奖。", note: "档案备注：稿子改了很多遍，最后几乎背下来了。", img: "assets/silk-trophy.jpg", pos: "", badge: "" },
+    { no: "REPLAY 02", tag: "国庆表演", cls: "p2", title: "国庆汇演", text: "台上的几分钟，是那年最亮的一次。", note: "档案备注：演出服到现在还留着。", img: "assets/national-day.jpg", pos: "", badge: "国庆汇演" },
     { no: "REPLAY 03", tag: "空白", cls: "p3", title: "留白", text: "这一格先空着，留给下一年的故事。", note: "档案备注：空白不是没有内容，是还没发生。" }
   ],
   stars: [
@@ -394,7 +403,9 @@ const box = document.getElementById("replays");
 D.replays.forEach(r => {
   const d = document.createElement("div");
   d.className = "shot";
-  d.innerHTML = `<div class="ph ${r.cls}">${r.tag}</div>
+  const media = r.img ? `<img class="${r.pos || ""}" src="${r.img}" alt="${r.tag}">` : r.tag;
+  const badge = r.badge ? `<span class="ph-badge">${r.badge}</span>` : "";
+  d.innerHTML = `<div class="ph ${r.cls}">${media}${badge}</div>
     <div class="cap"><span>${r.no}</span><span>${r.tag}</span></div>
     <h3>${r.title}</h3><p>${r.text}</p>
     <div class="note">${r.note}</div>
