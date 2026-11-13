@@ -1,7 +1,11 @@
 name: 每日菜单推送
 
 on:
-  # 定时由腾讯云函数触发（workflow_dispatch），这里不用 GitHub 的 cron
+  schedule:
+    # GitHub 兜底定时（UTC）；腾讯云正常时由它触发
+    - cron: '15 13 * * *'  # 21:15 北京 → 次日早餐
+    - cron: '0 3 * * *'    # 11:00 北京 → 当天午餐
+    - cron: '0 8 * * *'    # 16:00 北京 → 当天晚餐
   workflow_dispatch:
     inputs:
       meal:
