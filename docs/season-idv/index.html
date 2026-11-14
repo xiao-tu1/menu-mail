@@ -65,12 +65,14 @@
     background:radial-gradient(ellipse at 50% 40%, transparent 34%, rgba(0,0,0,.72) 100%);
   }
 
-  main{position:relative;z-index:2;max-width:430px;margin:0 auto;}
+  html,body{height:100%;overflow:hidden;}
+  main{position:fixed;inset:0;z-index:2;max-width:430px;margin:0 auto;overflow:hidden;}
   section{
-    min-height:100vh;min-height:100svh;
+    position:absolute;inset:0;height:100%;min-height:0;
     padding:60px 24px calc(44px + env(safe-area-inset-bottom));
-    display:flex;flex-direction:column;justify-content:center;
+    display:none;flex-direction:column;justify-content:center;
   }
+  section.active{display:flex;}
   section.in{animation:rise .9s cubic-bezier(.2,.8,.2,1) both;}
   @keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
 
@@ -248,6 +250,24 @@
     background:rgba(16,12,8,.72);border:1px solid rgba(232,200,119,.45);
     padding:3px 7px;
   }
+
+  .sheet{
+    position:absolute;inset:0;z-index:30;pointer-events:none;opacity:0;
+    background:linear-gradient(160deg,#e9ddc6,#d6c6a8);
+    box-shadow:0 30px 60px rgba(0,0,0,.6);transform-origin:top center;
+    display:flex;align-items:center;justify-content:center;overflow:hidden;
+  }
+  .sheet::before{content:"";position:absolute;inset:0;opacity:.12;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");}
+  .sheet::after{content:"";position:absolute;inset:14px;border:1px solid rgba(166,124,46,.45);border-radius:6px;}
+  .sheet .mark{text-align:center;color:#a67c2e;opacity:.5;}
+  .sheet .mark b{display:block;font-size:64px;font-weight:700;letter-spacing:.04em;}
+  .sheet .mark span{display:block;font-size:9px;letter-spacing:.4em;margin-top:8px;}
+  #sand{position:absolute;inset:0;z-index:31;pointer-events:none;}
+  .dots{position:fixed;left:0;right:0;bottom:calc(14px + env(safe-area-inset-bottom));z-index:40;
+    display:flex;gap:9px;justify-content:center;pointer-events:none;}
+  .dots i{width:5px;height:5px;border-radius:50%;background:rgba(232,200,119,.22);transition:.3s;}
+  .dots i.on{background:#e8c877;transform:scale(1.35);box-shadow:0 0 8px rgba(232,200,119,.7);}
 </style>
 </head>
 <body>
@@ -338,7 +358,10 @@
     <a class="switch" href="../season/">← 看看王者荣耀版</a>
   </section>
 
+  <div class="sheet" id="sheet"><div class="mark"><b>S20</b><span>SEASON ARCHIVE</span></div></div>
+  <canvas id="sand"></canvas>
 </main>
+<div class="dots" id="dots"></div>
 
 <div class="modal" id="modal">
   <div class="modal-card">
@@ -390,12 +413,15 @@ document.querySelectorAll(".count").forEach(el => { el.dataset.done = "0"; });
 function runCount(el){
   if (el.dataset.done === "1") return;
   el.dataset.done = "1";
-  const to = +el.dataset.to, t0 = performance.now();
-  (function step(t){
-    const p = Math.min(1, (t - t0) / 900);
+  const to = +el.dataset.to;
+  let start = null;
+  function step(t){
+    if (start === null) start = t;
+    const p = Math.max(0, Math.min(1, (t - start) / 900));
     el.textContent = Math.round(to * (1 - Math.pow(1 - p, 3)));
     if (p < 1) requestAnimationFrame(step);
-  })(t0);
+  }
+  requestAnimationFrame(step);
 }
 
 /* 回放 */
@@ -465,17 +491,112 @@ document.getElementById("seal").addEventListener("click", () => {
   toast("火漆印已拆，档案开启");
 });
 
-/* 进场 */
-const sections = document.querySelectorAll("section");
-const io = new IntersectionObserver(es => {
-  es.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.classList.add("in");
-      e.target.querySelectorAll(".count").forEach(runCount);
+/* 整页翻页：纸片掀起 + 流沙 */
+const sections = Array.from(document.querySelectorAll("main > section"));
+const sheet = document.getElementById("sheet");
+const sandC = document.getElementById("sand");
+const sctx = sandC.getContext("2d");
+const dots = document.getElementById("dots");
+let cur = 0, busy = false;
+
+function sizeSand(){
+  sandC.width = sandC.clientWidth * devicePixelRatio;
+  sandC.height = sandC.clientHeight * devicePixelRatio;
+  sctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+}
+sizeSand();
+addEventListener("resize", sizeSand);
+
+function drawSand(t){
+  const W = sandC.clientWidth, H = sandC.clientHeight;
+  sctx.clearRect(0, 0, W, H);
+  if (t <= 0.02 || t >= 0.98) return;
+  const edge = H * (1 - t);
+  const curtain = sctx.createLinearGradient(0, edge, 0, edge + 190);
+  curtain.addColorStop(0, "rgba(232,200,119,.30)");
+  curtain.addColorStop(.35, "rgba(232,200,119,.12)");
+  curtain.addColorStop(1, "rgba(232,200,119,0)");
+  sctx.fillStyle = curtain;
+  sctx.fillRect(0, edge, W, 190);
+  for (let i = 0; i < 850; i++){
+    const x = Math.random() * W;
+    const d = Math.pow(Math.random(), 1.7) * 150;
+    const y = edge - 4 + d;
+    const a = 0.22 + Math.random() * 0.65;
+    const w = 1 + Math.random() * 2.2;
+    sctx.fillStyle = "rgba(232,200,119," + a + ")";
+    sctx.fillRect(x, y, w, w + Math.random() * 7);
+  }
+  for (let i = 0; i < 20; i++){
+    const x = 20 + Math.random() * (W - 40);
+    const y = edge + Math.random() * 24;
+    const len = 70 + Math.random() * 90;
+    const g = sctx.createLinearGradient(x, y, x, y + len);
+    g.addColorStop(0, "rgba(255,230,170,.55)");
+    g.addColorStop(1, "rgba(232,200,119,0)");
+    sctx.fillStyle = g;
+    sctx.fillRect(x, y, 1.2, len);
+  }
+}
+
+sections.forEach((sec, i) => {
+  const d = document.createElement("i");
+  if (i === 0) d.className = "on";
+  dots.appendChild(d);
+});
+const dotEls = Array.from(dots.children);
+
+function setActive(i){
+  sections.forEach((sec, j) => sec.classList.toggle("active", j === i));
+  dotEls.forEach((d, j) => d.classList.toggle("on", j === i));
+  sections[i].querySelectorAll(".count").forEach(runCount);
+}
+setActive(0);
+
+function go(n){
+  if (busy || n < 0 || n >= sections.length || n === cur) return;
+  busy = true;
+  sheet.style.transition = "none";
+  sheet.style.opacity = "1";
+  sheet.style.transform = "translateY(0) rotateX(0)";
+  requestAnimationFrame(() => {
+    setActive(n);
+    cur = n;
+    const t0 = performance.now(), D = 680;
+    function step(t){
+      const p = Math.min(1, (t - t0) / D);
+      const e = 1 - Math.pow(1 - p, 3);
+      sheet.style.transform = `translateY(${-100 * e}%) rotateX(${9 * e}deg)`;
+      drawSand(e);
+      if (p < 1) requestAnimationFrame(step);
+      else {
+        sheet.style.opacity = "0";
+        sheet.style.transform = "translateY(0)";
+        sctx.clearRect(0, 0, sandC.clientWidth, sandC.clientHeight);
+        busy = false;
+      }
     }
+    requestAnimationFrame(step);
   });
-}, { threshold: .25 });
-sections.forEach(s => io.observe(s));
+}
+
+addEventListener("wheel", (e) => {
+  if (Math.abs(e.deltaY) < 18) return;
+  go(cur + (e.deltaY > 0 ? 1 : -1));
+}, { passive: true });
+
+let touchY = 0;
+addEventListener("touchstart", (e) => { touchY = e.touches[0].clientY; }, { passive: true });
+addEventListener("touchend", (e) => {
+  const dy = e.changedTouches[0].clientY - touchY;
+  if (dy < -42) go(cur + 1);
+  else if (dy > 42) go(cur - 1);
+}, { passive: true });
+
+addEventListener("keydown", (e) => {
+  if (e.key === "ArrowDown" || e.key === "PageDown") go(cur + 1);
+  if (e.key === "ArrowUp" || e.key === "PageUp") go(cur - 1);
+});
 
 /* toast */
 let tt;
