@@ -1,11 +1,7 @@
 name: 每日菜单推送
 
 on:
-  schedule:
-    # GitHub 定时兜底（UTC，北京时间 = UTC+8）
-    - cron: '15 13 * * *'  # 21:15 次日早餐
-    - cron: '0 3 * * *'    # 11:00 当天午餐
-    - cron: '0 8 * * *'    # 16:00 当天晚餐
+  # 定时由腾讯云函数触发；GitHub 不再使用 cron，避免重复
   workflow_dispatch:
     inputs:
       meal:
