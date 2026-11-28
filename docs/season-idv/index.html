@@ -286,12 +286,14 @@
     opacity:.85;letter-spacing:-.04em;
   }
   .cake{
-    position:absolute;left:auto;right:-20px;bottom:-6px;
-    width:215px;z-index:1;filter:drop-shadow(0 24px 36px rgba(0,0,0,.55));
+    position:absolute;left:auto;right:2px;bottom:0;
+    width:220px;z-index:1;filter:drop-shadow(0 26px 40px rgba(0,0,0,.55)) drop-shadow(0 0 26px rgba(232,200,119,.18));
+    animation:cakeFloat 6s ease-in-out infinite;
   }
+  @keyframes cakeFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
   .cat{
-    position:absolute;left:5%;bottom:5%;width:118px;z-index:2;
-    filter:drop-shadow(0 12px 18px rgba(0,0,0,.5));
+    position:absolute;left:4%;bottom:4%;width:132px;z-index:2;
+    filter:drop-shadow(0 14px 20px rgba(0,0,0,.5));
     animation:catFloat 5s ease-in-out infinite;
   }
   @keyframes catFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
@@ -351,42 +353,89 @@
   <span class="berry" style="left:24%;bottom:26%;width:9px;height:9px"></span>
   <span class="berry" style="right:26%;bottom:30%;width:12px;height:12px"></span>
 
-  <svg class="cake" viewBox="0 0 260 240" aria-hidden="true">
-    <ellipse cx="130" cy="222" rx="96" ry="12" fill="rgba(0,0,0,.35)"/>
-    <ellipse cx="130" cy="214" rx="92" ry="11" fill="#e8dcc6"/>
-    <rect x="42" y="150" width="176" height="62" rx="10" fill="#f3e3c3"/>
-    <path d="M42 160 q22 16 44 0 q22 16 44 0 q22 16 44 0 q22 16 44 0 v18 h-176 z" fill="#c98a8a"/>
-    <rect x="64" y="104" width="132" height="54" rx="9" fill="#f6e9cf"/>
-    <path d="M64 114 q18 14 36 0 q18 14 36 0 q18 14 36 0 q18 14 36 0 v16 h-144 z" fill="#5b6da6"/>
-    <g fill="#f3e3c3">
-      <rect x="86" y="64" width="7" height="42" rx="3"/>
-      <rect x="112" y="58" width="7" height="48" rx="3"/>
-      <rect x="138" y="62" width="7" height="44" rx="3"/>
-      <rect x="164" y="66" width="7" height="40" rx="3"/>
-    </g>
+  <svg class="cake" viewBox="0 0 260 250" aria-hidden="true">
+    <defs>
+      <linearGradient id="ca" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff7e6"/><stop offset="1" stop-color="#ecd2a6"/></linearGradient>
+      <linearGradient id="cb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff2df"/><stop offset="1" stop-color="#e6c79b"/></linearGradient>
+      <linearGradient id="cc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9ee"/><stop offset="1" stop-color="#e9b8c3"/></linearGradient>
+      <linearGradient id="cd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c3d0f2"/><stop offset="1" stop-color="#6d7fb8"/></linearGradient>
+      <filter id="glow"><feGaussianBlur stdDeviation="3.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    <ellipse cx="130" cy="232" rx="100" ry="13" fill="rgba(0,0,0,.42)"/>
+    <ellipse cx="130" cy="224" rx="94" ry="11" fill="#efe3cc"/>
+    <rect x="38" y="164" width="184" height="58" rx="14" fill="url(#ca)"/>
+    <path d="M38 176 q16 16 32 0 t32 0 t32 0 t32 0 t32 0 t24 0 v-14 h-184 z" fill="#c98a8a"/>
+    <rect x="58" y="112" width="144" height="56" rx="12" fill="url(#cb)"/>
+    <path d="M58 124 q16 15 32 0 t32 0 t32 0 t32 0 t16 0 v-14 h-144 z" fill="#6d7fb8"/>
+    <rect x="80" y="74" width="100" height="42" rx="10" fill="url(#cc)"/>
+    <path d="M80 84 q14 13 28 0 t28 0 t28 0 t16 0 v-12 h-100 z" fill="#c98a8a"/>
     <g>
-      <ellipse cx="89.5" cy="56" rx="5" ry="9" fill="#ffcf6e"/>
-      <ellipse cx="115.5" cy="50" rx="5" ry="9" fill="#ffcf6e"/>
-      <ellipse cx="141.5" cy="54" rx="5" ry="9" fill="#ffcf6e"/>
-      <ellipse cx="167.5" cy="58" rx="5" ry="9" fill="#ffcf6e"/>
+      <rect x="92" y="42" width="6" height="34" rx="3" fill="#f6e7c8"/>
+      <rect x="112" y="36" width="6" height="40" rx="3" fill="#f6e7c8"/>
+      <rect x="132" y="40" width="6" height="36" rx="3" fill="#f6e7c8"/>
+      <rect x="152" y="36" width="6" height="40" rx="3" fill="#f6e7c8"/>
+      <rect x="172" y="42" width="6" height="34" rx="3" fill="#f6e7c8"/>
+    </g>
+    <g filter="url(#glow)">
+      <ellipse cx="95" cy="34" rx="5" ry="9" fill="#ffcf6e"/>
+      <ellipse cx="115" cy="28" rx="5" ry="9" fill="#ffcf6e"/>
+      <ellipse cx="135" cy="32" rx="5" ry="9" fill="#ffcf6e"/>
+      <ellipse cx="155" cy="28" rx="5" ry="9" fill="#ffcf6e"/>
+      <ellipse cx="175" cy="34" rx="5" ry="9" fill="#ffcf6e"/>
     </g>
     <g fill="#4b5d92">
-      <circle cx="82" cy="104" r="6"/><circle cx="100" cy="101" r="5"/>
-      <circle cx="122" cy="105" r="6"/><circle cx="146" cy="101" r="5"/>
-      <circle cx="170" cy="104" r="6"/><circle cx="186" cy="100" r="4"/>
+      <circle cx="72" cy="112" r="6"/><circle cx="96" cy="108" r="5"/><circle cx="120" cy="111" r="6"/>
+      <circle cx="148" cy="108" r="5"/><circle cx="174" cy="112" r="6"/><circle cx="192" cy="108" r="4"/>
     </g>
-    <text x="130" y="196" text-anchor="middle" font-family="Georgia,serif" font-size="13" fill="#7a5c2e" letter-spacing="4">HAPPY BIRTHDAY</text>
+    <g fill="#5b6da6">
+      <circle cx="52" cy="164" r="5"/><circle cx="208" cy="164" r="5"/><circle cx="80" cy="160" r="4"/><circle cx="180" cy="160" r="4"/>
+    </g>
+    <g fill="#ffd9a0">
+      <rect x="54" y="190" width="7" height="2.4" rx="1" transform="rotate(-18 57 191)"/>
+      <rect x="92" y="200" width="7" height="2.4" rx="1" transform="rotate(14 95 201)"/>
+      <rect x="160" y="198" width="7" height="2.4" rx="1" transform="rotate(-10 163 199)"/>
+      <rect x="196" y="188" width="7" height="2.4" rx="1" transform="rotate(20 199 189)"/>
+      <rect x="124" y="186" width="7" height="2.4" rx="1" transform="rotate(6 127 187)"/>
+    </g>
+    <text x="130" y="208" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#7a5c2e" letter-spacing="3.4">HAPPY BIRTHDAY</text>
+    <g fill="#e8c877" opacity=".9">
+      <path d="M30 60 l2 6 l6 2 l-6 2 l-2 6 l-2 -6 l-6 -2 l6 -2 z"/>
+      <path d="M226 96 l1.6 5 l5 1.6 l-5 1.6 l-1.6 5 l-1.6 -5 l-5 -1.6 l5 -1.6 z"/>
+      <path d="M214 40 l1.4 4 l4 1.4 l-4 1.4 l-1.4 4 l-1.4 -4 l-4 -1.4 l4 -1.4 z"/>
+    </g>
   </svg>
 
-  <svg class="cat" viewBox="0 0 140 160" aria-hidden="true">
-    <path d="M48 150 q-8 -46 8 -70 q6 -10 20 -10 q16 0 22 14 q10 24 2 66 z" fill="#f3e3c3"/>
-    <path d="M56 74 l-6 -26 l22 12 z" fill="#f3e3c3"/>
-    <path d="M92 74 l8 -26 l-22 12 z" fill="#f3e3c3"/>
-    <circle cx="74" cy="70" r="24" fill="#f6e9cf"/>
-    <path d="M104 148 q18 -22 6 -44" fill="none" stroke="#f3e3c3" stroke-width="9" stroke-linecap="round"/>
-    <ellipse cx="65" cy="68" rx="3.2" ry="4.4" fill="#3e4f86"/>
-    <ellipse cx="83" cy="68" rx="3.2" ry="4.4" fill="#3e4f86"/>
-    <path d="M70 78 q4 4 8 0" fill="none" stroke="#c98a8a" stroke-width="2" stroke-linecap="round"/>
+  <svg class="cat" viewBox="0 0 160 180" aria-hidden="true">
+    <defs>
+      <linearGradient id="fur" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff8ea"/><stop offset="1" stop-color="#eeddc0"/></linearGradient>
+      <linearGradient id="ear" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6c9c9"/><stop offset="1" stop-color="#dfa3a3"/></linearGradient>
+    </defs>
+    <ellipse cx="80" cy="170" rx="44" ry="7" fill="rgba(0,0,0,.3)"/>
+    <path d="M118 160 q26 -18 16 -44 q-4 -12 -14 -8 q-8 4 -2 12 q10 14 -4 30" fill="none" stroke="url(#fur)" stroke-width="13" stroke-linecap="round"/>
+    <path d="M40 162 q-6 -44 8 -66 q10 -16 32 -16 q24 0 34 18 q12 24 4 64 z" fill="url(#fur)"/>
+    <ellipse cx="80" cy="130" rx="24" ry="30" fill="#fffdf4" opacity=".75"/>
+    <circle cx="80" cy="78" r="34" fill="url(#fur)"/>
+    <path d="M52 58 l-6 -30 l26 14 z" fill="url(#fur)"/>
+    <path d="M108 58 l6 -30 l-26 14 z" fill="url(#fur)"/>
+    <path d="M56 54 l-3 -16 l14 8 z" fill="url(#ear)"/>
+    <path d="M104 54 l3 -16 l-14 8 z" fill="url(#ear)"/>
+    <path d="M66 44 q4 -5 8 0 M86 44 q4 -5 8 0" stroke="#d9c39c" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    <ellipse cx="67" cy="78" rx="6" ry="7.6" fill="#33406e"/>
+    <ellipse cx="93" cy="78" rx="6" ry="7.6" fill="#33406e"/>
+    <circle cx="65" cy="75" r="2.2" fill="#fff"/>
+    <circle cx="91" cy="75" r="2.2" fill="#fff"/>
+    <ellipse cx="55" cy="90" rx="6" ry="3.4" fill="#f2b8b8" opacity=".8"/>
+    <ellipse cx="105" cy="90" rx="6" ry="3.4" fill="#f2b8b8" opacity=".8"/>
+    <path d="M76 88 l4 3 l4 -3" fill="none" stroke="#c98a8a" stroke-width="2" stroke-linecap="round"/>
+    <path d="M80 91 v4 M80 95 q-4 4 -7 1 M80 95 q4 4 7 1" stroke="#c98a8a" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    <g stroke="#d9c39c" stroke-width="1.4" stroke-linecap="round">
+      <path d="M48 84 l-14 -3 M48 89 l-14 3 M112 84 l14 -3 M112 89 l14 3"/>
+    </g>
+    <ellipse cx="62" cy="158" rx="10" ry="6" fill="#fffdf4"/>
+    <ellipse cx="98" cy="158" rx="10" ry="6" fill="#fffdf4"/>
+    <circle cx="112" cy="150" r="6" fill="#4b5d92"/>
+    <circle cx="110" cy="148" r="1.8" fill="#fff"/>
+    <path d="M118 144 q4 -6 8 -2" stroke="#7a8a5a" stroke-width="2" fill="none" stroke-linecap="round"/>
   </svg>
 </div>
 
@@ -429,8 +478,8 @@
       <div class="rec-row"><span class="k">认真生活的天数</span><span class="dots"></span><span class="v"><span class="count" data-to="365">365</span><small>次</small></span></div>
       <div class="rec-row"><span class="k">可爱浓度</span><span class="dots"></span><span class="v"><span class="count" data-to="100">100</span><small>%</small></span></div>
       <button class="rec-link" data-modal="decode">查看这一年的高光</button>
-      <div class="rec-row"><span class="k">被惦记的次数</span><span class="dots"></span><span class="v">∞</span></div>
-      <button class="rec-link" data-modal="rescue">查看被惦记的证据</button>
+      <div class="rec-row"><span class="k">好人好事</span><span class="dots"></span><span class="v">∞</span></div>
+      <button class="rec-link" data-modal="rescue">查看好人好事</button>
     </div>
   </section>
 
@@ -505,7 +554,7 @@ const D = {
   ],
   modals: {
     decode: { tag: "THIS YEAR", title: "这一年的高光", body: "丝绸之路朗诵大赛！！！，团支部努力工作🐟，游泳达标（点赞），延安延安，国庆汇演漂亮表演，英语某赛校第一，校史馆........，马原课堂回荡的歌声.............." },
-    rescue: { tag: "BE REMEMBERED", title: "被惦记的证据", body: "仗义出手救援被分发作业压实的课代表，带鸭板肠给小兔吃" },
+    rescue: { tag: "GOOD DEEDS", title: "好人好事", body: "仗义出手救援被分发作业压实的课代表，带鸭板肠给小兔吃" },
     gift: { tag: "BIRTHDAY GIFT", title: "白兔给勤勉鱼的生日礼物", body: "勤勉鱼：这一年你游过很多水域，也躲过很多网。\n生日这天，白兔把礼物放在这里——\n愿你继续清醒、自律、知进退、爱自己。\n\n礼物已签收：一整年的好运。" }
   }
 };
@@ -738,9 +787,9 @@ function vibrate(){ if (navigator.vibrate) navigator.vibrate(18); }
 
 /* 生日文案 */
 document.getElementById("p1").textContent =
-  `19 岁啦。愿你以后的日子，有软糖的甜，也有说走就走的底气。`;
+  `19 岁啦，正式解锁成年人的第二年。可以继续可爱，也可以偶尔摆烂；可以认真生活，也可以理直气壮地偷懒。`;
 document.getElementById("p2").textContent =
-  `不用急着长大，也不用事事懂事。做你自己就好，剩下的交给时间。`;
+  `蛋糕多吃一块，烦恼少想一件，好运多来一点。生日快乐，不止今天。`;
 </script>
 </body>
 </html>
