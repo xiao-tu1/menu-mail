@@ -266,6 +266,7 @@
   #sand{position:absolute;inset:0;z-index:31;pointer-events:none;}
   .dots{position:fixed;left:0;right:0;bottom:calc(14px + env(safe-area-inset-bottom));z-index:40;
     display:flex;gap:9px;justify-content:center;pointer-events:none;}
+  .dots i{cursor:pointer;}
   .dots i{width:5px;height:5px;border-radius:50%;background:rgba(232,200,119,.22);transition:.3s;}
   .dots i.on{background:#e8c877;transform:scale(1.35);box-shadow:0 0 8px rgba(232,200,119,.7);}
 
@@ -345,6 +346,51 @@
   }
   .flameGlow{transform-box:fill-box;transform-origin:center;animation:glowPulse 1.8s ease-in-out infinite;}
   @keyframes glowPulse{0%,100%{opacity:.55;transform:scale(1)}50%{opacity:.95;transform:scale(1.08)}}
+
+  .catbubble{
+    position:absolute;left:10%;bottom:33%;z-index:9;opacity:0;transform:translateY(6px) scale(.9);
+    background:#fffdf6;color:#3a3328;font-size:11px;letter-spacing:.06em;padding:7px 11px;border-radius:12px;
+    box-shadow:0 6px 16px rgba(0,0,0,.35);transition:.25s;pointer-events:none;white-space:nowrap;
+  }
+  .catbubble.show{opacity:1;transform:none;}
+  .catbubble::after{content:"";position:absolute;left:18px;bottom:-5px;width:9px;height:9px;background:#fffdf6;transform:rotate(45deg);}
+  .cat.hop{animation:hop .55s cubic-bezier(.2,.9,.3,1.2);}
+  @keyframes hop{0%,100%{transform:translateY(0)}40%{transform:translateY(-14px) rotate(-4deg)}70%{transform:translateY(-4px)}}
+  .cat.shake{animation:shake .45s;}
+  @keyframes shake{0%,100%{transform:rotate(0)}25%{transform:rotate(-5deg)}75%{transform:rotate(5deg)}}
+
+  body.wishing .bday{filter:brightness(.45) saturate(.9);transition:.6s;}
+  body.wishing .cake{filter:drop-shadow(0 0 30px rgba(255,190,90,.55));}
+  .cake.out .flame{opacity:0 !important;visibility:hidden;transition:none;}
+  .cake.out .flameGlow{opacity:0 !important;transition:.4s;}
+
+  .wishbar{
+    position:fixed;left:50%;bottom:calc(34px + env(safe-area-inset-bottom));transform:translate(-50%,16px);
+    z-index:60;display:flex;align-items:center;gap:10px;opacity:0;pointer-events:none;transition:.3s;
+    background:rgba(18,16,12,.9);border:1px solid rgba(232,200,119,.35);padding:9px 12px;border-radius:4px;
+    color:#e6d8ba;font-size:11px;letter-spacing:.06em;white-space:nowrap;
+  }
+  .wishbar.show{opacity:1;transform:translate(-50%,0);pointer-events:auto;}
+  .wishbar button{background:rgba(124,43,43,.5);border:1px solid rgba(232,200,119,.4);color:#f3e3c2;font-family:inherit;font-size:11px;padding:5px 9px;border-radius:3px;}
+
+  .wishdone{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;background:rgba(4,6,10,.7);opacity:0;pointer-events:none;transition:.35s;}
+  .wishdone.show{opacity:1;pointer-events:auto;}
+  .wishdone .wc{width:280px;background:linear-gradient(160deg,#e8dcc6,#d3c3a3);color:#2a2418;padding:24px 20px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.6);}
+  .wishdone .wt{font-size:17px;letter-spacing:.1em;margin-bottom:10px;}
+  .wishdone p{font-size:12px;line-height:1.9;margin:0 0 16px;}
+  .wishdone button{background:none;border:1px solid rgba(36,31,24,.35);color:#4a4030;font-family:inherit;font-size:11px;letter-spacing:.14em;padding:8px 18px;}
+
+  .confetti{position:fixed;top:-12px;width:7px;height:11px;z-index:65;pointer-events:none;border-radius:1px;animation:fall linear forwards;}
+  @keyframes fall{to{transform:translateY(105vh) rotate(720deg);opacity:.2;}}
+  .smoke{position:fixed;width:8px;height:8px;border-radius:50%;background:rgba(220,220,220,.5);z-index:64;pointer-events:none;animation:smokeUp 1.2s ease-out forwards;}
+  @keyframes smokeUp{to{transform:translateY(-60px) scale(2.2);opacity:0;}}
+
+  .music{position:fixed;top:12px;right:12px;z-index:55;width:34px;height:34px;border-radius:50%;border:1px solid rgba(232,200,119,.3);background:rgba(16,20,32,.6);color:#e8c877;font-size:15px;line-height:1;}
+  .music.on{background:rgba(232,200,119,.18);}
+  .home{position:fixed;top:12px;left:12px;z-index:55;display:none;background:rgba(16,20,32,.6);border:1px solid rgba(232,200,119,.25);color:#cdbd99;font-family:inherit;font-size:10px;letter-spacing:.12em;padding:6px 9px;border-radius:3px;}
+  .home.show{display:block;}
+  .sign-date{text-align:right;font-size:10px;color:#8a7a5c;margin-top:4px;}
+  .poster-btn{margin-top:12px;display:block;width:100%;background:rgba(232,200,119,.1);border:1px solid rgba(232,200,119,.45);color:#e8d9ba;font-family:inherit;font-size:12px;letter-spacing:.14em;padding:12px;}
 </style>
 </head>
 <body>
@@ -364,7 +410,7 @@
   <span class="berry" style="left:24%;bottom:26%;width:9px;height:9px"></span>
   <span class="berry" style="right:26%;bottom:30%;width:12px;height:12px"></span>
 
-  <svg class="cake" viewBox="0 0 260 270" aria-hidden="true">
+  <svg class="cake" id="cake" viewBox="0 0 260 270" aria-hidden="true">
     <defs>
       <linearGradient id="sideA" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#d8b98c"/><stop offset=".28" stop-color="#fdf1da"/><stop offset=".72" stop-color="#f3ddba"/><stop offset="1" stop-color="#c9a877"/></linearGradient>
       <linearGradient id="topA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffaf0"/><stop offset="1" stop-color="#f0e2c6"/></linearGradient>
@@ -426,6 +472,7 @@
       <rect x="196" y="194" width="7" height="2.4" rx="1" transform="rotate(20 199 195)"/>
       <rect x="124" y="192" width="7" height="2.4" rx="1" transform="rotate(6 127 193)"/>
     </g>
+    <g><rect x="106" y="138" width="48" height="22" rx="5" fill="#6b3f22" stroke="#e8c877" stroke-width="1.2"/><text x="130" y="154" text-anchor="middle" font-family="Georgia,serif" font-size="13" fill="#f6e7c8">19</text></g>
     <text x="130" y="216" text-anchor="middle" font-family="Georgia,serif" font-size="11.5" fill="#7a5c2e" letter-spacing="3.2">HAPPY BIRTHDAY</text>
     <g fill="#e8c877" opacity=".9">
       <path d="M28 64 l2 6 l6 2 l-6 2 l-2 6 l-2 -6 l-6 -2 l6 -2 z"/>
@@ -434,7 +481,8 @@
     </g>
   </svg>
 
-  <img class="cat" src="assets/bajiao.png" alt="呆猫八条">
+  <img class="cat" id="cat" src="assets/bajiao.png" alt="呆猫八条">
+    <div class="catbubble" id="catBubble">喵？</div>
 </div>
 
 <main>
@@ -515,13 +563,19 @@
       <p id="p1"></p>
       <p id="p2"></p>
       <div class="sign">—— 小了白了兔</div>
+      <div class="sign-date">2026.12.02</div>
       <div class="stamp2">生日快乐</div>
     </div>
     <a class="cta" href="../birthday/">去吹蜡烛 →</a>
+    <button class="poster-btn" id="posterBtn">保存「19 岁战绩」长图</button>
   </section>
 
   <div class="sheet" id="sheet"><div class="mark"><b>19</b><span>HAPPY BIRTHDAY</span></div></div>
   <canvas id="sand"></canvas>
+  <div class="wishbar" id="wishbar"><span>对着手机吹蜡烛，或点一下火苗</span><button id="wishBlow">吹灭</button></div>
+  <div class="wishdone" id="wishdone"><div class="wc"><div class="wt">愿望已收到</div><p>19 岁的愿望，已经替你收好了。<br>剩下的，交给时间慢慢实现。</p><button id="wishClose">继续</button></div></div>
+  <button class="music" id="musicBtn" aria-label="音乐">♪</button>
+  <button class="home" id="homeBtn">↑ 封面</button>
 </main>
 <div class="dots" id="dots"></div>
 
@@ -623,12 +677,7 @@ modal.addEventListener("click", (e) => { if (e.target === modal) modal.classList
 
 /* 火漆印 */
 document.getElementById("seal").addEventListener("click", () => {
-  const s = document.getElementById("seal");
-  if (s.classList.contains("broken")) return;
-  s.classList.add("broken");
-  document.getElementById("sealHint").textContent = "愿望已收下";
-  thud(4);
-  toast("火漆拆开，愿望收下");
+  startWish();
 });
 
 /* 整页翻页：纸片掀起 + 流沙 */
@@ -682,6 +731,8 @@ function drawSand(t){
 sections.forEach((sec, i) => {
   const d = document.createElement("i");
   if (i === 0) d.className = "on";
+  d.style.pointerEvents = "auto";
+  d.addEventListener("click", () => go(i));
   dots.appendChild(d);
 });
 const dotEls = Array.from(dots.children);
@@ -690,6 +741,8 @@ function setActive(i){
   sections.forEach((sec, j) => sec.classList.toggle("active", j === i));
   dotEls.forEach((d, j) => d.classList.toggle("on", j === i));
   sections[i].querySelectorAll(".count").forEach(runCount);
+  const hb = document.getElementById("homeBtn");
+  if (hb) hb.classList.toggle("show", i > 0);
 }
 setActive(0);
 
@@ -788,6 +841,256 @@ document.getElementById("p1").textContent =
   `19 岁啦，正式解锁成年人的第二年。可以继续可爱，也可以偶尔摆烂；可以认真生活，也可以理直气壮地偷懒。`;
 document.getElementById("p2").textContent =
   `蛋糕多吃一块，烦恼少想一件，好运多来一点。生日快乐，不止今天。`;
+
+/* ===== 许愿 / 吹蜡烛 ===== */
+let wishing = false, candlesOut = false;
+function startWish(){
+  const seal = document.getElementById("seal");
+  if (wishing || seal.classList.contains("broken")) return;
+  wishing = true;
+  seal.classList.add("broken");
+  document.getElementById("sealHint").textContent = "对着手机吹，或点一下火苗";
+  document.body.classList.add("wishing");
+  document.getElementById("wishbar").classList.add("show");
+  thud(4);
+  listenBlow();
+}
+async function listenBlow(){
+  try{
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const ac = audio();
+    const src = ac.createMediaStreamSource(stream);
+    const an = ac.createAnalyser();
+    an.fftSize = 512;
+    src.connect(an);
+    const data = new Uint8Array(an.frequencyBinCount);
+    let hits = 0;
+    (function check(){
+      if (!wishing) { stream.getTracks().forEach(t => t.stop()); return; }
+      an.getByteFrequencyData(data);
+      let sum = 0;
+      for (let i = 0; i < data.length; i++) sum += data[i];
+      const rms = sum / data.length / 255;
+      if (rms > 0.16) hits++; else hits = Math.max(0, hits - 1);
+      if (hits > 6) { stream.getTracks().forEach(t => t.stop()); blowOut(); return; }
+      requestAnimationFrame(check);
+    })();
+  }catch(e){
+    document.getElementById("wishbar").querySelector("span").textContent = "点一下火苗，或按「吹灭」";
+  }
+}
+function blowOut(){
+  if (candlesOut) return;
+  candlesOut = true; wishing = false;
+  const cake = document.getElementById("cake");
+  cake.classList.add("out");
+  document.body.classList.remove("wishing");
+  document.getElementById("wishbar").classList.remove("show");
+  for (let i = 0; i < 8; i++) smoke();
+  confetti();
+  birthdayTune();
+  setTimeout(() => document.getElementById("wishdone").classList.add("show"), 650);
+}
+function relight(){
+  candlesOut = false;
+  document.getElementById("cake").classList.remove("out");
+  document.getElementById("wishdone").classList.remove("show");
+  toast("蜡烛又亮啦");
+}
+function smoke(){
+  const d = document.createElement("div");
+  d.className = "smoke";
+  d.style.left = (window.innerWidth * 0.78 + (Math.random() * 80 - 40)) + "px";
+  d.style.top = (window.innerHeight - 300 + Math.random() * 30) + "px";
+  document.body.appendChild(d);
+  setTimeout(() => d.remove(), 1300);
+}
+function confetti(){
+  const colors = ["#e8c877", "#f3e3c2", "#c98a8a", "#6d7fb8", "#fff6e2"];
+  for (let i = 0; i < 46; i++){
+    const d = document.createElement("div");
+    d.className = "confetti";
+    d.style.left = Math.random() * 100 + "vw";
+    d.style.background = colors[i % colors.length];
+    d.style.animationDuration = (1.6 + Math.random() * 1.6) + "s";
+    d.style.animationDelay = (Math.random() * .4) + "s";
+    if (Math.random() < .5) d.style.borderRadius = "50%";
+    document.body.appendChild(d);
+    setTimeout(() => d.remove(), 3800);
+  }
+}
+document.getElementById("wishBlow").addEventListener("click", blowOut);
+document.getElementById("wishClose").addEventListener("click", () => {
+  document.getElementById("wishdone").classList.remove("show");
+});
+
+/* 点蛋糕：吹灭 / 重新点亮 */
+document.getElementById("cake").addEventListener("click", () => {
+  if (candlesOut) relight(); else blowOut();
+});
+
+/* ===== 呆猫彩蛋 ===== */
+const cat = document.getElementById("cat");
+const bubble = document.getElementById("catBubble");
+const catWords = ["老实", "喵？", "别戳啦", "呆住", "生日快乐"];
+let catTimer;
+cat.addEventListener("click", () => {
+  cat.classList.remove("hop"); void cat.offsetWidth; cat.classList.add("hop");
+  bubble.textContent = catWords[Math.floor(Math.random() * catWords.length)];
+  bubble.classList.add("show");
+  clearTimeout(catTimer);
+  catTimer = setTimeout(() => bubble.classList.remove("show"), 1200);
+  thud(2);
+});
+let pressTimer;
+cat.addEventListener("pointerdown", () => {
+  pressTimer = setTimeout(() => {
+    cat.classList.add("shake");
+    bubble.textContent = "再戳就生气啦";
+    bubble.classList.add("show");
+    setTimeout(() => cat.classList.remove("shake"), 500);
+    setTimeout(() => bubble.classList.remove("show"), 1600);
+  }, 650);
+});
+["pointerup", "pointerleave", "pointercancel"].forEach(ev => cat.addEventListener(ev, () => clearTimeout(pressTimer)));
+
+/* ===== 音乐（Web Audio，无外部文件） ===== */
+let musicOn = false, musicTimer = null;
+const notes = [523.25, 659.25, 783.99, 659.25, 587.33, 698.46, 880.0, 698.46];
+function playNote(freq, when, dur, vol){
+  try{
+    const ac = audio(), o = ac.createOscillator(), g = ac.createGain();
+    o.type = "sine"; o.frequency.value = freq;
+    o.connect(g); g.connect(ac.destination);
+    g.gain.setValueAtTime(.0001, when);
+    g.gain.exponentialRampToValueAtTime(vol, when + .02);
+    g.gain.exponentialRampToValueAtTime(.0001, when + dur);
+    o.start(when); o.stop(when + dur + .02);
+  }catch(e){}
+}
+function musicStep(){
+  if (!musicOn) return;
+  const ac = audio();
+  const n = notes[Math.floor(Math.random() * notes.length)];
+  playNote(n, ac.currentTime, 1.6, .045);
+}
+document.getElementById("musicBtn").addEventListener("click", () => {
+  musicOn = !musicOn;
+  const b = document.getElementById("musicBtn");
+  b.classList.toggle("on", musicOn);
+  b.textContent = musicOn ? "♪" : "♪";
+  if (musicOn){ audio(); musicStep(); musicTimer = setInterval(musicStep, 1500); }
+  else { clearInterval(musicTimer); musicTimer = null; }
+});
+function birthdayTune(){
+  try{
+    const ac = audio(), seq = [392, 392, 440, 392, 523.25, 493.88];
+    seq.forEach((f, i) => playNote(f, ac.currentTime + i * .22, .3, .12));
+  }catch(e){}
+}
+
+/* ===== 回到封面 ===== */
+document.getElementById("homeBtn").addEventListener("click", () => go(0));
+
+/* ===== 生成战绩长图 ===== */
+function drawCover(ctx, img, x, y, w, h){
+  const r = Math.max(w / img.width, h / img.height);
+  const sw = w / r, sh = h / r;
+  ctx.drawImage(img, (img.width - sw) / 2, (img.height - sh) / 2, sw, sh, x, y, w, h);
+}
+function wrapText(ctx, text, x, y, maxW, lh){
+  let line = "";
+  for (const ch of text){
+    if (ctx.measureText(line + ch).width > maxW){ ctx.fillText(line, x, y); y += lh; line = ch; }
+    else line += ch;
+  }
+  if (line) ctx.fillText(line, x, y);
+  return y;
+}
+async function makePoster(){
+  const W = 1080, H = 2280;
+  const c = document.createElement("canvas");
+  c.width = W; c.height = H;
+  const ctx = c.getContext("2d");
+  const bg = ctx.createLinearGradient(0, 0, 0, H);
+  bg.addColorStop(0, "#0d1630"); bg.addColorStop(.55, "#101a36"); bg.addColorStop(1, "#070b16");
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+
+  ctx.fillStyle = "rgba(232,200,119,.08)";
+  ctx.beginPath(); ctx.arc(880, 240, 260, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(160, 900, 200, 0, Math.PI*2); ctx.fill();
+
+  ctx.textAlign = "center";
+  ctx.fillStyle = "#e8c877";
+  ctx.font = "600 96px Georgia, serif";
+  ctx.fillText("19", W/2, 300);
+  ctx.font = "28px 'Microsoft YaHei', sans-serif";
+  ctx.fillStyle = "#e6d8ba";
+  ctx.fillText("生日快乐 · 2026.12.02", W/2, 360);
+  ctx.font = "22px 'Microsoft YaHei', sans-serif";
+  ctx.fillStyle = "#9c8b6a";
+  ctx.fillText("勤勉鱼   ·   西安", W/2, 404);
+
+  // 数据
+  ctx.fillStyle = "rgba(217,204,180,.9)";
+  ctx.font = "26px 'Microsoft YaHei', sans-serif";
+  ctx.fillText("逃脱 365 次   ·   破译 100%   ·   好人好事 ∞", W/2, 480);
+
+  // 三张照片
+  const photos = [
+    ["assets/silk-trophy.jpg", "丝绸获奖"],
+    ["assets/national-day.jpg", "国庆表演"],
+    ["assets/english-first.jpg", "英语第一"]
+  ];
+  let y = 540;
+  for (const [src, label] of photos){
+    try{
+      const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
+      ctx.save();
+      ctx.fillStyle = "rgba(217,204,180,.06)";
+      ctx.fillRect(70, y, W - 140, 430);
+      drawCover(ctx, img, 70, y, W - 140, 400);
+      ctx.fillStyle = "rgba(8,10,16,.65)";
+      ctx.fillRect(70, y + 360, W - 140, 40);
+      ctx.fillStyle = "#f3e3c2";
+      ctx.font = "24px 'Microsoft YaHei', sans-serif";
+      ctx.textAlign = "left";
+      ctx.fillText(label, 96, y + 388);
+      ctx.restore();
+      y += 460;
+    }catch(e){ y += 40; }
+  }
+
+  // 祝福
+  ctx.textAlign = "center";
+  ctx.fillStyle = "#e6d8ba";
+  ctx.font = "30px 'Microsoft YaHei', sans-serif";
+  const lines = [
+    "19 岁啦，正式解锁成年人的第二年。",
+    "可以继续可爱，也可以偶尔摆烂；",
+    "蛋糕多吃一块，烦恼少想一件，",
+    "好运多来一点。生日快乐，不止今天。"
+  ];
+  lines.forEach((t, i) => ctx.fillText(t, W/2, 2000 + i * 52));
+  ctx.fillStyle = "#9c8b6a";
+  ctx.font = "22px 'Microsoft YaHei', sans-serif";
+  ctx.fillText("—— 小了白了兔", W/2, 2240);
+
+  c.toBlob((blob) => {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "19岁战绩.png";
+    document.body.appendChild(a); a.click(); a.remove();
+    toast("长图已生成");
+  }, "image/png");
+}
+document.getElementById("posterBtn").addEventListener("click", makePoster);
+
+/* 预加载 */
+["assets/silk-trophy.jpg", "assets/national-day.jpg", "assets/english-first.jpg", "assets/bajiao.png"].forEach(src => {
+  const i = new Image(); i.src = src;
+});
+
 </script>
 </body>
 </html>
