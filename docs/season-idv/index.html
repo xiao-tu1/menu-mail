@@ -474,8 +474,8 @@
     position:absolute;inset:0;opacity:.055;mix-blend-mode:overlay;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");
   }
-  .stk{position:absolute;z-index:4;pointer-events:none;border-radius:16px;filter:drop-shadow(0 10px 18px rgba(0,0,0,.5));opacity:.96;}
-  .stk-cover{left:10px;top:12px;width:72px;transform:rotate(-8deg);}
+  .stk{position:absolute;z-index:4;pointer-events:auto;border-radius:16px;filter:drop-shadow(0 10px 18px rgba(0,0,0,.5));opacity:.96;}
+  .stk-cover{left:14px;top:46px;width:70px;transform:rotate(-8deg);}
   .stk-data{right:12px;top:64px;width:82px;transform:rotate(7deg);}
   .stk-replay{right:12px;top:64px;width:74px;transform:rotate(9deg);}
   .stk-bless{left:auto;right:12px;top:64px;width:74px;transform:rotate(-9deg);}
@@ -535,6 +535,19 @@
   .bunting i:nth-child(3n){border-top-color:rgba(120,150,210,.7);}
   .fd{opacity:.8!important;font-size:16px!important;}
   .doodle{font-size:17px!important;opacity:1!important;}
+
+  .stk2{position:absolute;z-index:4;background:#fff;border-radius:14px;padding:2px;
+    box-shadow:0 10px 24px rgba(0,0,0,.45);}
+  .lights{position:absolute;left:0;right:0;top:0;height:42px;display:flex;justify-content:space-around;
+    align-items:flex-start;pointer-events:none;z-index:5;}
+  .lights i{width:5px;height:5px;border-radius:50%;background:#ffe6a8;box-shadow:0 0 9px #ffd27a;animation:tw 2.4s infinite;}
+  .lights i:nth-child(2n){animation-delay:-1.2s;background:#ffc9d4;box-shadow:0 0 9px #ff9fb4;}
+  @keyframes tw{0%,100%{opacity:.35}50%{opacity:1}}
+  .fall{position:fixed;top:-8px;width:2px;height:2px;background:#fff;border-radius:50%;
+    box-shadow:0 0 6px #ffe6a8;animation:fall 8s linear infinite;z-index:1;pointer-events:none;}
+  @keyframes fall{to{transform:translateY(108vh)}}
+  .rec-note{font-size:10px;color:#7a5a3a;text-align:center;margin:8px 0 14px;
+    font-family:"YouYuan","Microsoft YaHei",sans-serif;letter-spacing:.06em;}
 </style>
 </head>
 <body>
@@ -666,7 +679,7 @@
 
   <!-- 封面 -->
   <section class="cover in"><div class="bunting"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-    <img class="stk stk-cover" src="assets/stickers/sparkle.jpg" alt="">
+    <img class="stk stk-cover" src="assets/stickers/heart.png" alt="">
     <div class="case">HAPPY BIRTHDAY</div>
     <div class="big-s"><span id="ageSup" class="age-num">19</span><em>岁</em></div>
     <h1>生日快乐</h1>
@@ -1273,6 +1286,53 @@ document.getElementById("posterBtn").addEventListener("click", makePoster);
   const i = new Image(); i.src = src;
 });
 
+</script>
+<script>
+/* 额外贴纸、小灯串、流星、卡片备注 */
+(function(){
+  const extra=[
+    {i:1,src:"assets/stickers/heart.png",css:"right:2%;top:27%;width:56px;transform:rotate(7deg)"},
+    {i:2,src:"assets/stickers/question.jpeg",css:"left:6%;bottom:30%;width:66px;transform:rotate(-7deg)"},
+    {i:3,src:"assets/stickers/sparkle2.png",css:"right:7%;top:38%;width:64px;transform:rotate(6deg)"},
+    {i:4,src:"assets/stickers/peek.jpg",css:"left:7%;top:34%;width:62px;transform:rotate(-8deg)"}
+  ];
+  const secs=document.querySelectorAll("main > section");
+  extra.forEach(e=>{
+    if(!secs[e.i]) return;
+    const im=document.createElement("img");
+    im.className="stk2"; im.src=e.src; im.alt="八条"; im.style.cssText=e.css;
+    secs[e.i].appendChild(im);
+  });
+  // 小灯串（第 2-5 页）
+  for(let i=1;i<secs.length;i++){
+    const l=document.createElement("div"); l.className="lights";
+    for(let j=0;j<10;j++) l.appendChild(document.createElement("i"));
+    secs[i].appendChild(l);
+  }
+  // 流星
+  for(let i=0;i<9;i++){
+    const f=document.createElement("span"); f.className="fall";
+    f.style.left=(8+Math.random()*84)+"%";
+    f.style.animationDelay=(-Math.random()*8)+"s";
+    f.style.opacity=String(.35+Math.random()*.5);
+    document.body.appendChild(f);
+  }
+  // 数据卡小备注
+  const rec=document.querySelector(".record");
+  if(rec && !rec.querySelector(".rec-note")){
+    const n=document.createElement("div"); n.className="rec-note";
+    n.textContent="以上数据由时间统计，误差为 0 ♡";
+    rec.appendChild(n);
+  }
+  // 贴纸点一下会跳
+  document.querySelectorAll(".stk,.stk2").forEach(im=>{
+    im.style.cursor="pointer";
+    im.addEventListener("click",()=>{
+      im.animate([{transform:im.style.transform+" scale(1)"},{transform:im.style.transform+" scale(1.18) rotate(6deg)"},{transform:im.style.transform+" scale(1)"}],{duration:420,easing:"ease-out"});
+      if(window.toast) toast("喵 ~");
+    });
+  });
+})();
 </script>
 </body>
 </html>
