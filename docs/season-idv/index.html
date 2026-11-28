@@ -527,6 +527,14 @@
   .sec-head h2{position:relative;display:inline-block;}
   .sec-head h2::after{content:"";position:absolute;left:2px;right:2px;bottom:-7px;height:5px;
     border-bottom:2px dashed rgba(232,200,119,.35);border-radius:50%;}
+
+  .bunting{position:absolute;top:0;left:0;right:0;height:34px;display:flex;justify-content:space-around;pointer-events:none;z-index:5;}
+  .bunting::before{content:"";position:absolute;left:0;right:0;top:6px;height:1px;background:rgba(232,200,119,.35);}
+  .bunting i{width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-top:15px solid rgba(201,139,139,.75);filter:drop-shadow(0 2px 2px rgba(0,0,0,.3));}
+  .bunting i:nth-child(3n+2){border-top-color:rgba(232,200,119,.8);}
+  .bunting i:nth-child(3n){border-top-color:rgba(120,150,210,.7);}
+  .fd{opacity:.8!important;font-size:16px!important;}
+  .doodle{font-size:17px!important;opacity:1!important;}
 </style>
 </head>
 <body>
@@ -657,7 +665,7 @@
 <main>
 
   <!-- 封面 -->
-  <section class="cover in">
+  <section class="cover in"><div class="bunting"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <img class="stk stk-cover" src="assets/stickers/sparkle.jpg" alt="">
     <div class="case">HAPPY BIRTHDAY</div>
     <div class="big-s"><span id="ageSup" class="age-num">19</span><em>岁</em></div>
