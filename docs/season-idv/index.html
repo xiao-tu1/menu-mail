@@ -126,13 +126,13 @@
   .gift .go{font-size:16px;color:#e8c877;white-space:nowrap;}
 
   .seal{
-    width:78px;height:78px;margin:18px auto 0;border-radius:48% 52% 50% 50%;
+    width:78px;height:78px;margin:18px auto 0;transform:translateX(-40px);border-radius:48% 52% 50% 50%;
     background:radial-gradient(circle at 38% 30%,#a34242,#6e2222 70%,#4c1414);
     box-shadow:0 8px 20px rgba(0,0,0,.5), inset 0 2px 4px rgba(255,255,255,.18);
     display:flex;align-items:center;justify-content:center;color:#e8c9a8;font-size:12px;letter-spacing:.18em;
     cursor:pointer;transition:transform .2s,opacity .4s;position:relative;
   }
-  .seal:active{transform:scale(.94);}
+  .seal:active{transform:translateX(-40px) scale(.94);}
   .seal.broken{opacity:0;transform:scale(1.35) rotate(8deg);pointer-events:none;}
   .seal-hint{font-size:9px;letter-spacing:.22em;color:#8d7c5d;margin-top:8px;}
   .scroll-hint{font-size:9px;letter-spacing:.3em;color:#7f7054;margin-top:16px;animation:float 2s infinite;}
@@ -268,15 +268,113 @@
     display:flex;gap:9px;justify-content:center;pointer-events:none;}
   .dots i{width:5px;height:5px;border-radius:50%;background:rgba(232,200,119,.22);transition:.3s;}
   .dots i.on{background:#e8c877;transform:scale(1.35);box-shadow:0 0 8px rgba(232,200,119,.7);}
+
+  /* ===== 生日背景：19 / 蛋糕 / 蓝莓 / 小猫 ===== */
+  .bday{
+    position:fixed;inset:0;z-index:0;overflow:hidden;
+    background:
+      radial-gradient(1200px 700px at 50% -12%, #263861 0%, #141d38 42%, #080b18 78%, #05060d 100%);
+  }
+  .bday::after{
+    content:"";position:absolute;inset:0;
+    background:radial-gradient(ellipse at 50% 42%, transparent 32%, rgba(0,0,0,.55) 100%);
+  }
+  .b19{
+    position:absolute;right:-14px;top:6%;
+    font:700 270px/1 Georgia,"Times New Roman",serif;
+    color:transparent;-webkit-text-stroke:1.5px rgba(232,200,119,.20);
+    opacity:.85;letter-spacing:-.04em;
+  }
+  .cake{
+    position:absolute;left:auto;right:-20px;bottom:-6px;
+    width:215px;z-index:1;filter:drop-shadow(0 24px 36px rgba(0,0,0,.55));
+  }
+  .cat{
+    position:absolute;left:5%;bottom:5%;width:118px;z-index:2;
+    filter:drop-shadow(0 12px 18px rgba(0,0,0,.5));
+    animation:catFloat 5s ease-in-out infinite;
+  }
+  @keyframes catFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  .berry{
+    position:absolute;width:12px;height:12px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #a6b6e8, #4b5d92 55%, #1f2a4e);
+    box-shadow:inset -2px -3px 4px rgba(0,0,0,.45), 0 0 10px rgba(90,110,170,.25);
+    z-index:1;
+  }
+  .berry::after{
+    content:"";position:absolute;left:30%;top:22%;width:22%;height:22%;
+    border-radius:50%;background:rgba(255,255,255,.6);
+  }
+  .balloon{
+    position:absolute;width:56px;height:68px;border-radius:50% 50% 48% 48%;
+    z-index:1;opacity:.9;animation:balloonFloat 7s ease-in-out infinite;
+    box-shadow:inset -6px -8px 12px rgba(0,0,0,.25);
+  }
+  .balloon::after{
+    content:"";position:absolute;left:50%;top:100%;width:1px;height:80px;
+    background:linear-gradient(rgba(232,200,119,.55), transparent);
+  }
+  .b1{left:9%;top:12%;background:radial-gradient(circle at 35% 28%, #f3e3c3, #c9b58c);}
+  .b2{right:12%;top:16%;background:radial-gradient(circle at 35% 28%, #8ea0d8, #4b5d92);animation-delay:-2.2s;}
+  .b3{left:20%;top:38%;width:44px;height:54px;background:radial-gradient(circle at 35% 28%, #e6b3ae, #c98a8a);animation-delay:-4s;}
+  @keyframes balloonFloat{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-10px) rotate(2deg)}}
 </style>
 </head>
 <body>
-<canvas id="bg"></canvas>
-<div class="fog"><i></i><i></i><i></i></div>
-<div class="beams"></div>
-<div class="clock"></div>
-<div class="grain"></div>
-<div class="vignette"></div>
+<div class="bday">
+  <div class="b19">19</div>
+
+  <div class="balloon b1"></div>
+  <div class="balloon b2"></div>
+  <div class="balloon b3"></div>
+
+  <span class="berry" style="left:8%;top:24%"></span>
+  <span class="berry" style="left:16%;top:18%;width:10px;height:10px"></span>
+  <span class="berry" style="left:12%;top:34%;width:14px;height:14px"></span>
+  <span class="berry" style="right:10%;top:30%"></span>
+  <span class="berry" style="right:18%;top:22%;width:9px;height:9px"></span>
+  <span class="berry" style="right:6%;top:44%;width:11px;height:11px"></span>
+  <span class="berry" style="left:24%;bottom:26%;width:9px;height:9px"></span>
+  <span class="berry" style="right:26%;bottom:30%;width:12px;height:12px"></span>
+
+  <svg class="cake" viewBox="0 0 260 240" aria-hidden="true">
+    <ellipse cx="130" cy="222" rx="96" ry="12" fill="rgba(0,0,0,.35)"/>
+    <ellipse cx="130" cy="214" rx="92" ry="11" fill="#e8dcc6"/>
+    <rect x="42" y="150" width="176" height="62" rx="10" fill="#f3e3c3"/>
+    <path d="M42 160 q22 16 44 0 q22 16 44 0 q22 16 44 0 q22 16 44 0 v18 h-176 z" fill="#c98a8a"/>
+    <rect x="64" y="104" width="132" height="54" rx="9" fill="#f6e9cf"/>
+    <path d="M64 114 q18 14 36 0 q18 14 36 0 q18 14 36 0 q18 14 36 0 v16 h-144 z" fill="#5b6da6"/>
+    <g fill="#f3e3c3">
+      <rect x="86" y="64" width="7" height="42" rx="3"/>
+      <rect x="112" y="58" width="7" height="48" rx="3"/>
+      <rect x="138" y="62" width="7" height="44" rx="3"/>
+      <rect x="164" y="66" width="7" height="40" rx="3"/>
+    </g>
+    <g>
+      <ellipse cx="89.5" cy="56" rx="5" ry="9" fill="#ffcf6e"/>
+      <ellipse cx="115.5" cy="50" rx="5" ry="9" fill="#ffcf6e"/>
+      <ellipse cx="141.5" cy="54" rx="5" ry="9" fill="#ffcf6e"/>
+      <ellipse cx="167.5" cy="58" rx="5" ry="9" fill="#ffcf6e"/>
+    </g>
+    <g fill="#4b5d92">
+      <circle cx="82" cy="104" r="6"/><circle cx="100" cy="101" r="5"/>
+      <circle cx="122" cy="105" r="6"/><circle cx="146" cy="101" r="5"/>
+      <circle cx="170" cy="104" r="6"/><circle cx="186" cy="100" r="4"/>
+    </g>
+    <text x="130" y="196" text-anchor="middle" font-family="Georgia,serif" font-size="13" fill="#7a5c2e" letter-spacing="4">HAPPY BIRTHDAY</text>
+  </svg>
+
+  <svg class="cat" viewBox="0 0 140 160" aria-hidden="true">
+    <path d="M48 150 q-8 -46 8 -70 q6 -10 20 -10 q16 0 22 14 q10 24 2 66 z" fill="#f3e3c3"/>
+    <path d="M56 74 l-6 -26 l22 12 z" fill="#f3e3c3"/>
+    <path d="M92 74 l8 -26 l-22 12 z" fill="#f3e3c3"/>
+    <circle cx="74" cy="70" r="24" fill="#f6e9cf"/>
+    <path d="M104 148 q18 -22 6 -44" fill="none" stroke="#f3e3c3" stroke-width="9" stroke-linecap="round"/>
+    <ellipse cx="65" cy="68" rx="3.2" ry="4.4" fill="#3e4f86"/>
+    <ellipse cx="83" cy="68" rx="3.2" ry="4.4" fill="#3e4f86"/>
+    <path d="M70 78 q4 4 8 0" fill="none" stroke="#c98a8a" stroke-width="2" stroke-linecap="round"/>
+  </svg>
+</div>
 
 <main>
 
@@ -358,7 +456,7 @@
     <a class="switch" href="../season/">← 看看王者荣耀版</a>
   </section>
 
-  <div class="sheet" id="sheet"><div class="mark"><b>S20</b><span>SEASON ARCHIVE</span></div></div>
+  <div class="sheet" id="sheet"><div class="mark"><b>S19</b><span>SEASON ARCHIVE</span></div></div>
   <canvas id="sand"></canvas>
 </main>
 <div class="dots" id="dots"></div>
@@ -376,7 +474,7 @@
 <script>
 const D = {
   name: "勤勉鱼",
-  age: 20,
+  age: 19,
   replays: [
     { no: "REPLAY 01", tag: "丝绸获奖", cls: "p1", title: "丝绸之路朗诵大赛", text: "第八届丝路朗诵大会，全国总展演三等奖。", note: "档案备注：稿子改了很多遍，最后几乎背下来了。", img: "assets/silk-trophy.jpg", pos: "", badge: "" },
     { no: "REPLAY 02", tag: "国庆表演", cls: "p2", title: "国庆汇演", text: "万籁此都寂，唯余钟磬音", note: "档案备注：演出服到现在还留着。", img: "assets/national-day.jpg", pos: "", badge: "国庆汇演" },
