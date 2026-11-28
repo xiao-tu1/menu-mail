@@ -321,6 +321,17 @@
 
   .big-s .age-num{font-size:inherit;vertical-align:baseline;color:inherit;}
   .big-s em{font-size:26px;font-style:normal;color:var(--gold);margin-left:10px;letter-spacing:.08em;}
+
+  .bless{
+    background:linear-gradient(160deg,#e6dac3,#d2c2a3);color:var(--ink);
+    padding:26px 22px 20px;box-shadow:0 22px 48px rgba(0,0,0,.5);
+    position:relative;transform:rotate(-.6deg);
+  }
+  .bless::before{content:"";position:absolute;inset:12px;border:1px solid rgba(166,124,46,.35);pointer-events:none;}
+  .bless-mark{font-size:54px;line-height:.6;color:#b08d57;font-family:Georgia,serif;height:30px;}
+  .bless-text{font-size:17px;line-height:2.1;letter-spacing:.04em;margin:8px 0 14px;position:relative;z-index:1;}
+  .bless-emoji{font-size:15px;color:#7c2b2b;letter-spacing:.1em;margin-bottom:14px;}
+  .bless-from{text-align:right;font-size:13px;color:#5a4d38;letter-spacing:.08em;}
 </style>
 </head>
 <body>
@@ -432,14 +443,18 @@
     <div class="replays" id="replays"></div>
   </section>
 
-  <!-- 演绎之星 -->
+  <!-- 祝福 -->
   <section>
     <div class="sec-head">
-      <span class="small">LITTLE THINGS</span>
-      <h2>关于你的四件小事</h2>
+      <span class="small">A BLESSING</span>
+      <h2>写给你的祝福</h2>
     </div>
-    <div class="stars" id="stars"></div>
-    <div class="stamp-count" id="stampCount">已点亮 0 / 4</div>
+    <div class="bless">
+      <div class="bless-mark">“</div>
+      <p class="bless-text">有句话时光如斯流逝，<br>无忧之人不问朝夕，<br>祝你生日快乐呀，<br>快乐不止今天！！！</p>
+      <div class="bless-emoji">(◍•ᴗ•◍)</div>
+      <div class="bless-from">—— 窄门</div>
+    </div>
   </section>
 
   <!-- 结案 -->
@@ -539,26 +554,6 @@ D.replays.forEach(r => {
     if (d.classList.contains("open")) { toast("小纸条已展开"); thud(1); }
   });
   box.appendChild(d);
-});
-
-/* 勋章 */
-let stamped = 0;
-const sbox = document.getElementById("stars");
-D.stars.forEach((s) => {
-  const d = document.createElement("div");
-  d.className = "star-card";
-  d.innerHTML = `<div class="medal">${SVG[s.icon] || ""}</div><b>${s.title}</b><span>${s.desc}</span><div class="state">未点亮</div>`;
-  d.addEventListener("click", () => {
-    if (d.classList.contains("stamped")) { toast("这枚已经点亮了"); return; }
-    d.classList.add("stamped");
-    d.querySelector(".state").textContent = "已点亮";
-    stamped++;
-    document.getElementById("stampCount").textContent = "已点亮 " + stamped + " / 4";
-    thud(2); vibrate();
-    toast("点亮：" + s.title);
-    if (stamped >= 4) { chord(); burst(90); toast("四件小事都点亮了"); }
-  });
-  sbox.appendChild(d);
 });
 
 /* 弹窗 */
