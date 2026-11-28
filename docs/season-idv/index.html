@@ -359,7 +359,7 @@
   .cat.shake{animation:shake .45s;}
   @keyframes shake{0%,100%{transform:rotate(0)}25%{transform:rotate(-5deg)}75%{transform:rotate(5deg)}}
 
-  body.wishing .bday{filter:brightness(.45) saturate(.9);transition:.6s;}
+  body.wishing .bday{filter:brightness(.72) saturate(.95);transition:.6s;}
   body.wishing .cake{filter:drop-shadow(0 0 30px rgba(255,190,90,.55));}
   .cake.out .flame{opacity:0 !important;visibility:hidden;transition:none;}
   .cake.out .flameGlow{opacity:0 !important;transition:.4s;}
@@ -391,9 +391,102 @@
   .home.show{display:block;}
   .sign-date{text-align:right;font-size:10px;color:#8a7a5c;margin-top:4px;}
   .poster-btn{margin-top:12px;display:block;width:100%;background:rgba(232,200,119,.1);border:1px solid rgba(232,200,119,.45);color:#e8d9ba;font-family:inherit;font-size:12px;letter-spacing:.14em;padding:12px;}
+
+  /* ===== 夜空 / 极光 / 星尘 ===== */
+  .sky{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+  .sky .halo{position:absolute;left:50%;top:26%;width:640px;height:640px;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(232,200,119,.14),rgba(232,200,119,.04) 42%,transparent 68%);filter:blur(18px);}\n  .sky .moon{
+    position:absolute;left:50%;top:-120px;width:420px;height:420px;transform:translateX(-50%);
+    background:radial-gradient(circle,rgba(180,200,255,.18),rgba(120,150,220,.06) 45%,transparent 70%);
+    filter:blur(10px);
+  }
+  .sky .aurora{position:absolute;width:88vw;height:60vw;filter:blur(40px);opacity:.95;border-radius:50%;}
+  .sky .a1{left:-18%;top:2%;background:linear-gradient(120deg,#2f8f86,#4a6ad0 55%,transparent);animation:drift 26s ease-in-out infinite alternate;}
+  .sky .a2{right:-20%;top:10%;background:linear-gradient(120deg,#8a5ad0,#3f8fa8 50%,transparent);animation:drift 34s ease-in-out infinite alternate-reverse;}
+  @keyframes drift{0%{transform:translate(0,0) scale(1)}100%{transform:translate(4vw,-3vh) scale(1.15)}}
+  .sky .stars{
+    position:absolute;inset:0;opacity:.7;animation:twinkle 5s ease-in-out infinite alternate;
+    background-image:
+      radial-gradient(1.6px 1.6px at 12% 18%,#fff,transparent),
+      radial-gradient(1.2px 1.2px at 28% 9%,#fff,transparent),
+      radial-gradient(1.8px 1.8px at 46% 24%,#fff,transparent),
+      radial-gradient(1px 1px at 63% 12%,#fff,transparent),
+      radial-gradient(1.5px 1.5px at 78% 26%,#fff,transparent),
+      radial-gradient(1.2px 1.2px at 88% 8%,#fff,transparent),
+      radial-gradient(1.4px 1.4px at 8% 44%,#fff,transparent),
+      radial-gradient(1px 1px at 36% 52%,#fff,transparent),
+      radial-gradient(1.6px 1.6px at 72% 48%,#fff,transparent),
+      radial-gradient(1.2px 1.2px at 92% 40%,#fff,transparent),
+      radial-gradient(1.4px 1.4px at 18% 68%,#fff,transparent),
+      radial-gradient(1px 1px at 56% 74%,#fff,transparent),
+      radial-gradient(1.6px 1.6px at 84% 66%,#fff,transparent);
+  }
+  @keyframes twinkle{from{opacity:.45}to{opacity:.85}}
+  .sky .bokeh i{position:absolute;border-radius:50%;filter:blur(2px);opacity:.5;animation:floaty 9s ease-in-out infinite alternate;}
+  .sky .bokeh i:nth-child(1){width:90px;height:90px;left:8%;top:30%;background:#5b7bd6;}
+  .sky .bokeh i:nth-child(2){width:60px;height:60px;right:12%;top:22%;background:#d6a85b;animation-delay:-2s;}
+  .sky .bokeh i:nth-child(3){width:120px;height:120px;left:70%;top:62%;background:#4a8a8a;animation-delay:-4s;}
+  .sky .bokeh i:nth-child(4){width:50px;height:50px;left:22%;top:70%;background:#8a5bd6;animation-delay:-6s;}
+  .sky .bokeh i:nth-child(5){width:70px;height:70px;right:20%;top:80%;background:#5b7bd6;animation-delay:-1s;}
+  .sky .bokeh i:nth-child(6){width:40px;height:40px;left:48%;top:12%;background:#d6c35b;animation-delay:-3s;}
+  @keyframes floaty{from{transform:translateY(0)}to{transform:translateY(-18px)}}
+  .sky .rays{
+    position:absolute;left:50%;top:-40%;width:160vmax;height:160vmax;transform:translateX(-50%);
+    background:conic-gradient(from 0deg,transparent 0 10deg,rgba(232,200,119,.05) 10deg 13deg,transparent 13deg 70deg,rgba(180,200,255,.04) 70deg 73deg,transparent 73deg 160deg,rgba(232,200,119,.04) 160deg 163deg,transparent 163deg 250deg,rgba(180,200,255,.05) 250deg 253deg,transparent 253deg 360deg);
+    -webkit-mask:radial-gradient(circle,#000 0 26%,transparent 62%);
+            mask:radial-gradient(circle,#000 0 26%,transparent 62%);
+    animation:spin 90s linear infinite;opacity:.8;
+  }
+  @keyframes spin{to{transform:translateX(-50%) rotate(360deg)}}
+    .sky .tint{position:absolute;inset:0;background:linear-gradient(165deg,rgba(46,70,140,.38),transparent 38%,rgba(96,48,120,.30) 72%,transparent);}
+  .sky .shoot{position:absolute;top:16%;left:-12%;width:140px;height:1px;background:linear-gradient(90deg,transparent,#fff);opacity:0;animation:shoot 9s linear infinite;}
+  @keyframes shoot{0%,88%{opacity:0;transform:translate(0,0)}90%{opacity:.7}100%{opacity:0;transform:translate(60vw,22vh)}}  .sky .curtain{position:absolute;top:-12%;width:34%;height:78%;filter:blur(26px);transform:skewY(-10deg);border-radius:50% 50% 0 0;opacity:.55;}
+  .sky .c1{left:0%;background:linear-gradient(180deg,rgba(47,168,154,.55),transparent 72%);}
+  .sky .c2{left:33%;background:linear-gradient(180deg,rgba(106,90,208,.50),transparent 72%);}
+  .sky .c3{left:66%;background:linear-gradient(180deg,rgba(232,200,119,.38),transparent 72%);}
+  .sky .dust{position:absolute;inset:0;opacity:.75;animation:twinkle 6s ease-in-out infinite alternate;
+    background-image:
+      radial-gradient(2px 2px at 18% 26%,rgba(255,232,170,.9),transparent),
+      radial-gradient(1.5px 1.5px at 42% 18%,rgba(255,232,170,.7),transparent),
+      radial-gradient(2px 2px at 66% 34%,rgba(255,232,170,.8),transparent),
+      radial-gradient(1.5px 1.5px at 82% 58%,rgba(255,232,170,.6),transparent),
+      radial-gradient(2px 2px at 28% 62%,rgba(255,232,170,.5),transparent),
+      radial-gradient(1.5px 1.5px at 58% 82%,rgba(255,232,170,.7),transparent);}  .sky .nebula{position:absolute;inset:0;background:
+    radial-gradient(620px 420px at 8% 6%,rgba(47,168,154,.38),transparent 62%),
+    radial-gradient(560px 400px at 94% 10%,rgba(106,90,208,.34),transparent 62%),
+    radial-gradient(680px 460px at 50% 104%,rgba(232,200,119,.14),transparent 64%);}
+  .sky .con{position:absolute;left:0;top:6%;width:100%;height:26%;opacity:.55;}.sky .grain2{
+    position:absolute;inset:0;opacity:.055;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");
+  }
+  .stk{position:absolute;z-index:4;pointer-events:none;border-radius:16px;filter:drop-shadow(0 10px 18px rgba(0,0,0,.5));opacity:.96;}
+  .stk-cover{left:10px;top:12px;width:72px;transform:rotate(-8deg);}
+  .stk-data{right:10px;bottom:74px;width:84px;transform:rotate(7deg);}
+  .stk-replay{right:12px;top:78px;width:74px;transform:rotate(9deg);}
+  .stk-bless{left:10px;top:86px;width:74px;transform:rotate(-9deg);}
+  .stk-letter{right:12px;top:84px;width:72px;transform:rotate(7deg);}
 </style>
 </head>
 <body>
+<div class="sky">
+  <div class="moon"></div>\n  <div class="halo"></div>
+  <div class="tint"></div><div class="aurora a1"></div><div class="aurora a2"></div><div class="shoot"></div>
+  <div class="nebula"></div><div class="stars"></div><svg class="con" viewBox="0 0 400 220" preserveAspectRatio="none">
+  <g stroke="rgba(255,236,190,.22)" stroke-width="1" fill="none">
+    <path d="M20 170 L70 120 L120 140 L165 70 L215 96 L260 40 L310 78 L365 30"/>
+    <path d="M70 120 L95 60 L165 70"/>
+    <path d="M260 40 L300 110 L365 30"/>
+  </g>
+  <g fill="rgba(255,240,200,.75)">
+    <circle cx="20" cy="170" r="2"/><circle cx="70" cy="120" r="2.4"/><circle cx="120" cy="140" r="1.8"/>
+    <circle cx="165" cy="70" r="2.6"/><circle cx="215" cy="96" r="1.8"/><circle cx="260" cy="40" r="2.4"/>
+    <circle cx="310" cy="78" r="1.8"/><circle cx="365" cy="30" r="2.2"/><circle cx="95" cy="60" r="1.6"/><circle cx="300" cy="110" r="1.6"/>
+  </g>
+</svg><div class="curtain c1"></div><div class="curtain c2"></div><div class="curtain c3"></div><div class="dust"></div>
+  <div class="bokeh"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="rays"></div>
+  <div class="grain2"></div>
+</div>
+
 <div class="bday">
   <div class="b19">19</div>
 
@@ -489,6 +582,7 @@
 
   <!-- 封面 -->
   <section class="cover in">
+    <img class="stk stk-cover" src="assets/stickers/sparkle.jpg" alt="">
     <div class="case">HAPPY BIRTHDAY</div>
     <div class="big-s"><span id="ageSup" class="age-num">19</span><em>岁</em></div>
     <h1>生日快乐</h1>
@@ -516,6 +610,7 @@
 
   <!-- 数据 -->
   <section>
+    <img class="stk stk-data" src="assets/stickers/lie.jpg" alt="">
     <div class="sec-head">
       <span class="small">ABOUT YOU</span>
       <h2>十九岁</h2>
@@ -531,6 +626,7 @@
 
   <!-- 回放 -->
   <section>
+    <img class="stk stk-replay" src="assets/stickers/peek.jpg" alt="">
     <div class="sec-head">
       <span class="small">HIGHLIGHTS</span>
       <h2>高光时刻</h2>
@@ -540,6 +636,7 @@
 
   <!-- 祝福 -->
   <section>
+    <img class="stk stk-bless" src="assets/stickers/float.jpg" alt="">
     <div class="sec-head">
       <span class="small">A BLESSING</span>
       <h2>写给你的祝福</h2>
@@ -554,6 +651,7 @@
 
   <!-- 结案 -->
   <section>
+    <img class="stk stk-letter" src="assets/stickers/sparkle2.png" alt="">
     <div class="sec-head">
       <span class="small">A LETTER</span>
       <h2>写给你</h2>
