@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>赛季档案 · 第五人格</title>
+<title>19岁生日 · 勤勉鱼</title>
 <style>
   :root{
     --paper:#d9ccb4;
@@ -318,6 +318,9 @@
   .b2{right:12%;top:16%;background:radial-gradient(circle at 35% 28%, #8ea0d8, #4b5d92);animation-delay:-2.2s;}
   .b3{left:20%;top:38%;width:44px;height:54px;background:radial-gradient(circle at 35% 28%, #e6b3ae, #c98a8a);animation-delay:-4s;}
   @keyframes balloonFloat{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-10px) rotate(2deg)}}
+
+  .big-s .age-num{font-size:inherit;vertical-align:baseline;color:inherit;}
+  .big-s em{font-size:26px;font-style:normal;color:var(--gold);margin-left:10px;letter-spacing:.08em;}
 </style>
 </head>
 <body>
@@ -380,16 +383,16 @@
 
   <!-- 封面 -->
   <section class="cover in">
-    <div class="case">IDENTITY V · SEASON ARCHIVE</div>
-    <div class="big-s">S<span id="ageSup">20</span></div>
-    <h1>赛季档案</h1>
-    <div class="sub">第 <span id="ageTxt">20</span> 赛季 · 已封存<br>档案编号 NO.<span id="caseNo">20-1202</span></div>
+    <div class="case">HAPPY BIRTHDAY</div>
+    <div class="big-s"><span id="ageSup" class="age-num">19</span><em>岁</em></div>
+    <h1>生日快乐</h1>
+    <div class="sub">2026.12.02 · 西安<br>十九岁，继续明亮</div>
 
     <div class="label">
-      <div class="row"><span>玩家姓名</span><b id="playerName">勤勉鱼</b></div>
-      <div class="row"><span>档案状态</span><b>已封存</b></div>
-      <div class="row"><span>密级</span><b>仅本人可见</b></div>
-      <div class="row"><span>结案日期</span><b>12 月 2 日</b></div>
+      <div class="row"><span>姓名</span><b id="playerName">勤勉鱼</b></div>
+      <div class="row"><span>年龄</span><b>19 岁</b></div>
+      <div class="row"><span>生日</span><b>12 月 2 日</b></div>
+      <div class="row"><span>地点</span><b>西安</b></div>
     </div>
 
     <div class="motto">清醒，自律，知进退，爱自己~</div>
@@ -400,31 +403,31 @@
       <span class="go">›</span>
     </button>
 
-    <div class="seal" id="seal">启 封</div>
-    <div class="seal-hint" id="sealHint">轻触火漆印，开启档案</div>
-    <div class="scroll-hint">向下滑动翻阅</div>
+    <div class="seal" id="seal">许 愿</div>
+    <div class="seal-hint" id="sealHint">轻触火漆，许个愿</div>
+    <div class="scroll-hint">上滑，继续</div>
   </section>
 
   <!-- 数据 -->
   <section>
     <div class="sec-head">
-      <span class="small">MATCH RECORD</span>
-      <h2>对局数据</h2>
+      <span class="small">ABOUT YOU</span>
+      <h2>十九岁</h2>
     </div>
     <div class="record">
-      <div class="rec-row"><span class="k">逃脱次数</span><span class="dots"></span><span class="v"><span class="count" data-to="365">365</span><small>次</small></span></div>
-      <div class="rec-row"><span class="k">破译进度</span><span class="dots"></span><span class="v"><span class="count" data-to="100">100</span><small>%</small></span></div>
-      <button class="rec-link" data-modal="decode">查看破译记录</button>
-      <div class="rec-row"><span class="k">救援次数</span><span class="dots"></span><span class="v">∞</span></div>
-      <button class="rec-link" data-modal="rescue">查看救援记录</button>
+      <div class="rec-row"><span class="k">认真生活的天数</span><span class="dots"></span><span class="v"><span class="count" data-to="365">365</span><small>次</small></span></div>
+      <div class="rec-row"><span class="k">可爱浓度</span><span class="dots"></span><span class="v"><span class="count" data-to="100">100</span><small>%</small></span></div>
+      <button class="rec-link" data-modal="decode">查看这一年的高光</button>
+      <div class="rec-row"><span class="k">被爱的次数</span><span class="dots"></span><span class="v">∞</span></div>
+      <button class="rec-link" data-modal="rescue">查看被爱的证据</button>
     </div>
   </section>
 
   <!-- 回放 -->
   <section>
     <div class="sec-head">
-      <span class="small">KEY REPLAYS</span>
-      <h2>关键回放</h2>
+      <span class="small">HIGHLIGHTS</span>
+      <h2>高光时刻</h2>
     </div>
     <div class="replays" id="replays"></div>
   </section>
@@ -432,18 +435,18 @@
   <!-- 演绎之星 -->
   <section>
     <div class="sec-head">
-      <span class="small">DEDUCTION STARS</span>
-      <h2>演绎之星</h2>
+      <span class="small">LITTLE THINGS</span>
+      <h2>关于你的四件小事</h2>
     </div>
     <div class="stars" id="stars"></div>
-    <div class="stamp-count" id="stampCount">已授予 0 / 4</div>
+    <div class="stamp-count" id="stampCount">已点亮 0 / 4</div>
   </section>
 
   <!-- 结案 -->
   <section>
     <div class="sec-head">
-      <span class="small">CASE CLOSED</span>
-      <h2>结案陈词</h2>
+      <span class="small">A LETTER</span>
+      <h2>写给你</h2>
     </div>
     <div class="letter">
       <div class="lines"></div>
@@ -452,11 +455,10 @@
       <div class="sign">—— 你的老队友</div>
       <div class="stamp2">生日快乐</div>
     </div>
-    <a class="cta" href="../birthday/">前往生日现场 →</a>
-    <a class="switch" href="../season/">← 看看王者荣耀版</a>
+    <a class="cta" href="../birthday/">去吹蜡烛 →</a>
   </section>
 
-  <div class="sheet" id="sheet"><div class="mark"><b>S19</b><span>SEASON ARCHIVE</span></div></div>
+  <div class="sheet" id="sheet"><div class="mark"><b>19</b><span>HAPPY BIRTHDAY</span></div></div>
   <canvas id="sand"></canvas>
 </main>
 <div class="dots" id="dots"></div>
@@ -476,19 +478,19 @@ const D = {
   name: "勤勉鱼",
   age: 19,
   replays: [
-    { no: "REPLAY 01", tag: "丝绸获奖", cls: "p1", title: "丝绸之路朗诵大赛", text: "第八届丝路朗诵大会，全国总展演三等奖。", note: "档案备注：稿子改了很多遍，最后几乎背下来了。", img: "assets/silk-trophy.jpg", pos: "", badge: "" },
-    { no: "REPLAY 02", tag: "国庆表演", cls: "p2", title: "国庆汇演", text: "万籁此都寂，唯余钟磬音", note: "档案备注：演出服到现在还留着。", img: "assets/national-day.jpg", pos: "", badge: "国庆汇演" },
-    { no: "REPLAY 03", tag: "英语第一", cls: "p3", title: "英语竞赛", text: "英语某赛第一！！！", note: "档案备注：综合得分 96.29，学校排名第 1 / 83 人。", img: "assets/english-first.jpg", pos: "", badge: "" }
+    { no: "REPLAY 01", tag: "丝绸获奖", cls: "p1", title: "丝绸之路朗诵大赛", text: "第八届丝路朗诵大会，全国总展演三等奖。", note: "小纸条：稿子改了很多遍，最后几乎背下来了。", img: "assets/silk-trophy.jpg", pos: "", badge: "" },
+    { no: "REPLAY 02", tag: "国庆表演", cls: "p2", title: "国庆汇演", text: "万籁此都寂，唯余钟磬音", note: "小纸条：演出服到现在还留着。", img: "assets/national-day.jpg", pos: "", badge: "国庆汇演" },
+    { no: "REPLAY 03", tag: "英语第一", cls: "p3", title: "英语竞赛", text: "英语某赛第一！！！", note: "小纸条：综合得分 96.29，学校排名第 1 / 83 人。", img: "assets/english-first.jpg", pos: "", badge: "" }
   ],
   stars: [
-    { icon: "star", title: "年度最强输出", desc: "把日子过得热气腾腾" },
-    { icon: "shield", title: "最佳生存达人", desc: "通关所有难题，满血进新赛季" },
-    { icon: "heart", title: "全图支援", desc: "朋友需要时准时出现" },
-    { icon: "cake", title: "寿星专属", desc: "新一岁满级体验卡" }
+    { icon: "star", title: "元气担当", desc: "把日子过得热气腾腾" },
+    { icon: "shield", title: "生活家", desc: "把难题一个个通关" },
+    { icon: "heart", title: "及时雨", desc: "朋友需要时准时出现" },
+    { icon: "cake", title: "寿星本人", desc: "新一岁，满级体验卡" }
   ],
   modals: {
-    decode: { tag: "DECODE LOG", title: "破译记录", body: "丝绸之路朗诵大赛！！！，团支部努力工作🐟，游泳达标（点赞），延安延安，国庆汇演漂亮表演，英语某赛校第一，校史馆........，马原课堂回荡的歌声.............." },
-    rescue: { tag: "RESCUE LOG", title: "救援记录", body: "仗义出手救援被分发作业压实的课代表，带鸭板肠给小兔吃" },
+    decode: { tag: "THIS YEAR", title: "这一年的高光", body: "丝绸之路朗诵大赛！！！，团支部努力工作🐟，游泳达标（点赞），延安延安，国庆汇演漂亮表演，英语某赛校第一，校史馆........，马原课堂回荡的歌声.............." },
+    rescue: { tag: "BE LOVED", title: "被爱的证据", body: "仗义出手救援被分发作业压实的课代表，带鸭板肠给小兔吃" },
     gift: { tag: "BIRTHDAY GIFT", title: "白兔给勤勉鱼的生日礼物", body: "勤勉鱼：这一年你游过很多水域，也躲过很多网。\n生日这天，白兔把礼物放在这里——\n愿你继续清醒、自律、知进退、爱自己。\n\n礼物已签收：一整年的好运。" }
   }
 };
@@ -502,8 +504,6 @@ const SVG = {
 
 const age = D.age;
 document.getElementById("ageSup").textContent = age;
-document.getElementById("ageTxt").textContent = age;
-document.getElementById("caseNo").textContent = age + "-1202";
 document.getElementById("playerName").textContent = D.name;
 
 /* 数字 */
@@ -533,10 +533,10 @@ D.replays.forEach(r => {
     <div class="cap"><span>${r.no}</span><span>${r.tag}</span></div>
     <h3>${r.title}</h3><p>${r.text}</p>
     <div class="note">${r.note}</div>
-    <div class="tap">轻触查看档案备注</div>`;
+    <div class="tap">轻触查看小纸条</div>`;
   d.addEventListener("click", () => {
     d.classList.toggle("open");
-    if (d.classList.contains("open")) { toast("档案备注已展开"); thud(1); }
+    if (d.classList.contains("open")) { toast("小纸条已展开"); thud(1); }
   });
   box.appendChild(d);
 });
@@ -547,16 +547,16 @@ const sbox = document.getElementById("stars");
 D.stars.forEach((s) => {
   const d = document.createElement("div");
   d.className = "star-card";
-  d.innerHTML = `<div class="medal">${SVG[s.icon] || ""}</div><b>${s.title}</b><span>${s.desc}</span><div class="state">未授予</div>`;
+  d.innerHTML = `<div class="medal">${SVG[s.icon] || ""}</div><b>${s.title}</b><span>${s.desc}</span><div class="state">未点亮</div>`;
   d.addEventListener("click", () => {
-    if (d.classList.contains("stamped")) { toast("这枚徽章已经授予了"); return; }
+    if (d.classList.contains("stamped")) { toast("这枚已经点亮了"); return; }
     d.classList.add("stamped");
-    d.querySelector(".state").textContent = "已授予";
+    d.querySelector(".state").textContent = "已点亮";
     stamped++;
-    document.getElementById("stampCount").textContent = "已授予 " + stamped + " / 4";
+    document.getElementById("stampCount").textContent = "已点亮 " + stamped + " / 4";
     thud(2); vibrate();
-    toast("授予：" + s.title);
-    if (stamped >= 4) { chord(); burst(90); toast("全部演绎之星已授予"); }
+    toast("点亮：" + s.title);
+    if (stamped >= 4) { chord(); burst(90); toast("四件小事都点亮了"); }
   });
   sbox.appendChild(d);
 });
@@ -584,9 +584,9 @@ document.getElementById("seal").addEventListener("click", () => {
   const s = document.getElementById("seal");
   if (s.classList.contains("broken")) return;
   s.classList.add("broken");
-  document.getElementById("sealHint").textContent = "档案已启封";
+  document.getElementById("sealHint").textContent = "愿望已收下";
   thud(4);
-  toast("火漆印已拆，档案开启");
+  toast("火漆拆开，愿望收下");
 });
 
 /* 整页翻页：纸片掀起 + 流沙 */
@@ -741,40 +741,11 @@ function tone(f){
 }
 function vibrate(){ if (navigator.vibrate) navigator.vibrate(18); }
 
-/* 金尘 */
-const fx = document.getElementById("bg"), fxctx = fx.getContext("2d");
-let W, H, ps = [];
-function resize(){
-  W = fx.width = innerWidth * devicePixelRatio;
-  H = fx.height = innerHeight * devicePixelRatio;
-  fx.style.width = innerWidth + "px"; fx.style.height = innerHeight + "px";
-  fxctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
-  ps = Array.from({length: 52}, () => ({
-    x: Math.random()*innerWidth, y: Math.random()*innerHeight,
-    r: Math.random()*1.5 + .3, s: Math.random()*.22 + .04,
-    a: Math.random()*.4 + .08,
-    c: Math.random() < .35 ? "120,200,180" : "232,200,119"
-  }));
-}
-resize(); addEventListener("resize", resize);
-(function loop(){
-  fxctx.clearRect(0,0,innerWidth,innerHeight);
-  ps.forEach(p => {
-    p.y -= p.s;
-    if (p.y < -4) { p.y = innerHeight + 4; p.x = Math.random()*innerWidth; }
-    fxctx.beginPath();
-    fxctx.fillStyle = `rgba(${p.c},${p.a})`;
-    fxctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
-    fxctx.fill();
-  });
-  requestAnimationFrame(loop);
-})();
-
-/* 结案文案 */
+/* 生日文案 */
 document.getElementById("p1").textContent =
-  `S${age - 1} 赛季已结案。卷宗里记录着你这一年的每一次逃脱、每一次救援，和每一次把难题甩在身后的瞬间。`;
+  `19 岁啦。这一年你认真生活、认真发光，每一次大笑、每一次被需要，都是证据。`;
 document.getElementById("p2").textContent =
-  `现宣布：S${age} 赛季正式开启。愿你继续满血、继续超神，也继续做那个把日子过得热气腾腾的人。`;
+  `新的一岁，不用太用力。愿你继续清醒、自律、知进退、爱自己，也继续被这个世界温柔对待。`;
 </script>
 </body>
 </html>
