@@ -272,13 +272,12 @@
 
   /* ===== 生日背景：19 / 蛋糕 / 蓝莓 / 小猫 ===== */
   .bday{
-    position:fixed;inset:0;z-index:0;overflow:hidden;
-    background:
-      radial-gradient(1200px 700px at 50% -12%, #263861 0%, #141d38 42%, #080b18 78%, #05060d 100%);
+    position:fixed;inset:0;z-index:0;overflow:hidden;background:radial-gradient(1200px 700px at 50% -12%, #263861 0%, #141d38 42%, #080b18 78%, #05060d 100%);
+    background:transparent;
   }
   .bday::after{
     content:"";position:absolute;inset:0;
-    background:radial-gradient(ellipse at 50% 42%, transparent 32%, rgba(0,0,0,.55) 100%);
+    background:radial-gradient(ellipse at 50% 42%, transparent 45%, rgba(0,0,0,.35) 100%);
   }
   .b19{
     position:absolute;right:-14px;top:6%;
@@ -454,7 +453,24 @@
     radial-gradient(620px 420px at 8% 6%,rgba(47,168,154,.38),transparent 62%),
     radial-gradient(560px 400px at 94% 10%,rgba(106,90,208,.34),transparent 62%),
     radial-gradient(680px 460px at 50% 104%,rgba(232,200,119,.14),transparent 64%);}
-  .sky .con{position:absolute;left:0;top:6%;width:100%;height:26%;opacity:.55;}.sky .grain2{
+  .sky .con{position:absolute;left:0;top:6%;width:100%;height:26%;opacity:.55;}
+  .sky .deco{position:absolute;inset:0;pointer-events:none;}
+  .sky .deco .pl{position:absolute;border-radius:50%;background:radial-gradient(circle at 34% 30%,#f7e3ae,#b08d57 52%,#5d4520 100%);box-shadow:0 0 24px rgba(232,200,119,.25);}
+  .sky .deco .pl::after{content:"";position:absolute;left:-9px;top:50%;width:calc(100% + 18px);height:calc(100% + 2px);border:1px solid rgba(232,200,119,.45);border-radius:50%;transform:translateY(-50%) rotate(-18deg) scaleY(.32);}
+  .sky .deco .p1{left:-26px;top:38%;width:74px;height:74px;opacity:.55;}
+  .sky .deco .p2{right:-30px;top:52%;width:52px;height:52px;opacity:.5;}
+  .sky .deco .p3{left:16%;bottom:16%;width:26px;height:26px;opacity:.45;}
+  .sky .deco .gift{position:absolute;width:24px;height:20px;border-radius:3px;background:linear-gradient(160deg,#c98b8b,#7c2b2b);box-shadow:0 6px 12px rgba(0,0,0,.35);}
+  .sky .deco .gift::before{content:"";position:absolute;left:50%;top:-5px;width:2px;height:26px;background:#e8c877;transform:translateX(-50%);}
+  .sky .deco .gift::after{content:"";position:absolute;left:0;top:8px;width:100%;height:2px;background:#e8c877;}
+  .sky .deco .g1{left:9%;top:20%;transform:rotate(-12deg);}
+  .sky .deco .g2{right:14%;top:36%;transform:rotate(10deg) scale(.8);}
+  .sky .deco .g3{left:22%;bottom:28%;transform:rotate(8deg) scale(.7);opacity:.8;}
+  .sky .deco .g4{right:8%;bottom:24%;transform:rotate(-8deg) scale(.65);opacity:.75;}
+  .sky .deco .s4{position:absolute;width:12px;height:12px;background:#ffe9b0;clip-path:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%);opacity:.75;animation:twinkle 4s ease-in-out infinite;}
+  .sky .deco .s5{position:absolute;width:7px;height:7px;border-radius:50%;background:#fff2cf;opacity:.7;animation:twinkle 5s ease-in-out infinite;}
+  .sky .deco .moon2{position:absolute;right:-36px;bottom:26%;width:110px;height:110px;border-radius:50%;box-shadow:inset -26px -16px 0 0 rgba(255,240,205,.14);filter:blur(.4px);}
+.sky .grain2{
     position:absolute;inset:0;opacity:.055;mix-blend-mode:overlay;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");
   }
@@ -464,13 +480,34 @@
   .stk-replay{right:12px;top:64px;width:74px;transform:rotate(9deg);}
   .stk-bless{left:auto;right:12px;top:64px;width:74px;transform:rotate(-9deg);}
   .stk-letter{right:12px;top:64px;width:72px;transform:rotate(7deg);}
+
+  .sky::after{content:"";position:absolute;inset:0;background:rgba(4,7,16,.42);pointer-events:none;}
+  .sky .aurora{opacity:.5!important;}
+  .sky .bokeh i{opacity:.16!important;}
+  .sky .deco .pl{opacity:.3!important;}
+  .sky .deco .gift{opacity:.55;}
+  .big-s{text-shadow:0 3px 36px rgba(4,7,16,.85)!important;}
+  .cover h1{text-shadow:0 2px 20px rgba(4,7,16,.8);}
 </style>
 </head>
 <body>
 <div class="sky">
-  <div class="moon"></div>\n  <div class="halo"></div>
+  <div class="moon"></div>
+  <div class="halo"></div>
   <div class="tint"></div><div class="aurora a1"></div><div class="aurora a2"></div><div class="shoot"></div>
-  <div class="nebula"></div><div class="stars"></div><svg class="con" viewBox="0 0 400 220" preserveAspectRatio="none">
+  <div class="nebula"></div><div class="stars"></div>
+  <div class="deco">
+    <i class="pl p1"></i><i class="pl p2"></i><i class="pl p3"></i>
+    <i class="gift g1"></i><i class="gift g2"></i><i class="gift g3"></i><i class="gift g4"></i>
+    <i class="moon2"></i>
+    <i class="s4" style="left:8%;top:9%"></i><i class="s4" style="left:78%;top:14%;animation-delay:-1s"></i>
+    <i class="s4" style="left:16%;top:62%;animation-delay:-2s"></i><i class="s4" style="left:86%;top:58%;animation-delay:-3s"></i>
+    <i class="s4" style="left:40%;top:6%;animation-delay:-1.5s"></i><i class="s4" style="left:64%;top:84%;animation-delay:-2.5s"></i>
+    <i class="s5" style="left:22%;top:34%"></i><i class="s5" style="left:72%;top:28%;animation-delay:-1s"></i>
+    <i class="s5" style="left:48%;top:48%;animation-delay:-2s"></i><i class="s5" style="left:12%;top:76%;animation-delay:-3s"></i>
+    <i class="s5" style="left:90%;top:78%;animation-delay:-1.2s"></i><i class="s5" style="left:58%;top:22%;animation-delay:-2.2s"></i>
+  </div>
+<svg class="con" viewBox="0 0 400 220" preserveAspectRatio="none">
   <g stroke="rgba(255,236,190,.22)" stroke-width="1" fill="none">
     <path d="M20 170 L70 120 L120 140 L165 70 L215 96 L260 40 L310 78 L365 30"/>
     <path d="M70 120 L95 60 L165 70"/>
